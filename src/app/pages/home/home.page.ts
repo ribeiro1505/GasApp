@@ -63,11 +63,22 @@ export class HomePage implements OnInit {
     this.gasService
       .getNearestGasStations(this.gasType)
       .subscribe((response) => {
-        this.nearGasStations = this.orderByLocation(response['resultado']);
+        this.nearGasStations = this.editPricingTag(
+          this.orderByLocation(response['resultado'])
+        );
         this.loadNearCheapStations(response['resultado']);
 
         this.loaded = this.isEverythingLoaded();
       });
+  }
+
+  editPricingTag(stations: Array<any>): Array<any> {
+    stations.forEach((element) => {
+      if (!element['Preco'].includes('litro')) {
+        element['Preco'] += '/litro';
+      }
+    });
+    return stations;
   }
 
   orderByLocation(response: Array<any>): Array<any> {
@@ -107,28 +118,30 @@ export class HomePage implements OnInit {
 
   // CHEAPEST AND NEAREST STATIONS LIST
   loadNearCheapStations(stations: Array<any>) {
-    this.nearCheapStations = stations
-      .filter((obj) => {
-        return (
-          this.calculateDistance(this.myLocation, [
-            obj['Latitude'],
-            obj['Longitude'],
-          ]) <= this.MAX_DISTANCE
-        );
-      })
-      .sort((a, b) => {
-        const priceA = parseFloat(
-          a['Preco'].replace(/,/g, '.').slice(0, a['Preco'].indexOf('€') - 1)
-        );
-        const priceB = parseFloat(
-          b['Preco'].replace(/,/g, '.').slice(0, b['Preco'].indexOf('€') - 1)
-        );
+    this.nearCheapStations = this.editPricingTag(
+      stations
+        .filter((obj) => {
+          return (
+            this.calculateDistance(this.myLocation, [
+              obj['Latitude'],
+              obj['Longitude'],
+            ]) <= this.MAX_DISTANCE
+          );
+        })
+        .sort((a, b) => {
+          const priceA = parseFloat(
+            a['Preco'].replace(/,/g, '.').slice(0, a['Preco'].indexOf('€') - 1)
+          );
+          const priceB = parseFloat(
+            b['Preco'].replace(/,/g, '.').slice(0, b['Preco'].indexOf('€') - 1)
+          );
 
-        if (priceA < priceB) return -1;
-        if (priceA > priceB) return 1;
-        return 0;
-      })
-      .slice(0, this.MAX_NUMBER_RESULTS);
+          if (priceA < priceB) return -1;
+          if (priceA > priceB) return 1;
+          return 0;
+        })
+        .slice(0, this.MAX_NUMBER_RESULTS)
+    );
     this.loaded = this.isEverythingLoaded();
   }
 

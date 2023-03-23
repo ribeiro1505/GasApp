@@ -7,7 +7,8 @@ import { Component, Input } from '@angular/core';
 })
 export class HorizontalScrollCardsComponent {
   @Input() gasStations: any[] = [];
-  @Input() sectionTitle: string = ""
+  @Input() sectionTitle: string = '';
+  @Input() location: any[] = [];
 
   constructor() {}
 }

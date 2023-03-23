@@ -97,7 +97,17 @@ export class GasStationCardSmallComponent {
     return url || this.default_image;
   }
 
-  distance() {
-    return 10
+  distance(coords1: any[], coords2: any[]) {
+    let p = 0.017453292519943295;
+    let c = Math.cos;
+    let a =
+      0.5 -
+      c((coords2[0] - coords1[0]) * p) / 2 +
+      (c(coords1[0] * p) *
+        c(coords2[0] * p) *
+        (1 - c((coords2[1] - coords1[1]) * p))) /
+        2;
+
+    return (12742 * Math.asin(Math.sqrt(a))).toFixed(2);
   }
 }

@@ -14,6 +14,9 @@ import { Geolocation } from '@awesome-cordova-plugins/geolocation/ngx';
     IonicModule.forRoot(),
     AppRoutingModule,
     HttpClientModule,
+    IonicModule.forRoot({
+      mode: 'ios',
+    }),
   ],
   providers: [
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },

@@ -10,9 +10,14 @@
       </ion-row>
     </ion-card-title>
   </ion-card-header>
-  <ion-card-content>
+  <ion-card-content *ngIf="gasStation['Latitude']">
     <ion-row bottom>
-      <ion-col>{{ distance() }} Km</ion-col>
+      <ion-col>
+        {{
+          distance(location, [gasStation["Latitude"], gasStation["Longitude"]])
+        }}
+        Km
+      </ion-col>
     </ion-row>
   </ion-card-content>
 </ion-card>
