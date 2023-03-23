@@ -1,0 +1,18 @@
+<ion-card>
+  <ion-card-header>
+    <ion-card-subtitle>{{ gasStation["Nome"] }}</ion-card-subtitle>
+    <ion-card-title>
+      <ion-row center>
+        <ion-col
+          ><img class="station-logo" src="{{ loadLogo() }}" alt="" />
+        </ion-col>
+        <ion-col>{{ gasStation["Preco"] }}</ion-col>
+      </ion-row>
+    </ion-card-title>
+  </ion-card-header>
+  <ion-card-content>
+    <ion-row bottom>
+      <ion-col>{{ distance() }} Km</ion-col>
+    </ion-row>
+  </ion-card-content>
+</ion-card>

@@ -1,0 +1,10 @@
+<div class="horizontal-container">
+  <div class="section-title">{{ sectionTitle }}</div>
+  <div class="horizontal-section">
+    <div *ngFor="let gasStation of gasStations">
+      <app-gas-station-card-small
+        [gasStation]="gasStation"
+      ></app-gas-station-card-small>
+    </div>
+  </div>
+</div>

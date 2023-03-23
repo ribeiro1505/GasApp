@@ -1,0 +1,28 @@
+ion-card-header {
+  display: flex;
+  flex-flow: column-reverse;
+}
+
+ion-card-title {
+  font-size: 22px;
+  margin-bottom: 10px;
+}
+
+ion-card {
+  min-width: 170px;
+  height: 90%;
+  margin: 10px;
+  margin-left: 0;
+}
+
+.station-logo {
+  width: 50px;
+}
+
+ion-col {
+  padding: 0;
+}
+
+ion-card-subtitle {
+  margin: 0;
+}

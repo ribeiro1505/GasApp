@@ -1,0 +1,19 @@
+.horizontal-container {
+  margin-top: 10px;
+}
+
+.section-title {
+  padding: 0 16px;
+  font-weight: bold;
+  font-size: large;
+}
+
+.horizontal-section {
+  display: flex;
+  flex-direction: row;
+  overflow: scroll;
+  padding: 5px 20px;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}

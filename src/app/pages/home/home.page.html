@@ -1,0 +1,27 @@
+<ion-spinner *ngIf="!loaded" class="spinner" name="dots"></ion-spinner>
+
+<ion-content *ngIf="loaded">
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">Home</ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+  <div class="home-body">
+    <app-horizontal-scroll-cards
+      [sectionTitle]='"Mais Baratas Perto de ti"'
+      [gasStations]="nearCheapStations"
+    >
+    </app-horizontal-scroll-cards>
+    <app-horizontal-scroll-cards
+      [sectionTitle]='"Mais Perto"'
+      [gasStations]="nearGasStations"
+    >
+    </app-horizontal-scroll-cards>
+    <app-horizontal-scroll-cards
+      [sectionTitle]='"Mais Baratas"'
+      [gasStations]="topGasStations"
+    >
+    </app-horizontal-scroll-cards>
+  </div>
+</ion-content>
