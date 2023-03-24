@@ -114,21 +114,6 @@ export class GasStationCardSmallComponent {
 
   public openMapsApp(location: any) {
     const geocoords = location[0] + ',' + location[1];
-
-    console.log(this.platform.platforms());
-
-    if (
-      this.platform.is('ios')
-    ) {
-      window.open('maps://?q=' + geocoords, '_system');
-      return;
-    }
-
-    if (this.platform.is('desktop')) {
-      window.open('https://www.google.com/maps?q=' + geocoords);
-      return;
-    }
-
-    window.open('geo:' + geocoords + '?q=' + geocoords, '_system');
+    window.open('https://www.google.com/maps?q=' + geocoords);
   }
 }
