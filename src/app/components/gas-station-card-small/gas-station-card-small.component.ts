@@ -1,4 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
+import { Platform } from '@ionic/angular';
 
 @Component({
   selector: 'app-gas-station-card-small',
@@ -67,7 +68,7 @@ export class GasStationCardSmallComponent {
 
   default_image = 'https://cdn-icons-png.flaticon.com/512/2933/2933839.png';
 
-  constructor() {}
+  constructor(private platform: Platform) {}
 
   loadLogo(): string {
     return this.checkMarca();
@@ -109,5 +110,25 @@ export class GasStationCardSmallComponent {
         2;
 
     return (12742 * Math.asin(Math.sqrt(a))).toFixed(2);
+  }
+
+  public openMapsApp(location: any) {
+    const geocoords = location[0] + ',' + location[1];
+
+    console.log(this.platform.platforms());
+
+    if (
+      this.platform.is('ios')
+    ) {
+      window.open('maps://?q=' + geocoords, '_system');
+      return;
+    }
+
+    if (this.platform.is('desktop')) {
+      window.open('https://www.google.com/maps?q=' + geocoords);
+      return;
+    }
+
+    window.open('geo:' + geocoords + '?q=' + geocoords, '_system');
   }
 }

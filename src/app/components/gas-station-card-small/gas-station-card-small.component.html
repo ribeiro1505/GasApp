@@ -1,4 +1,6 @@
-<ion-card>
+<ion-card
+  (click)="openMapsApp([gasStation['Latitude'], gasStation['Longitude']])"
+>
   <ion-card-header>
     <ion-card-subtitle>{{ gasStation["Nome"] }}</ion-card-subtitle>
     <ion-card-title>
