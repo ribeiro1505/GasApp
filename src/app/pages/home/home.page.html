@@ -3,7 +3,23 @@
 <ion-content *ngIf="loaded">
   <ion-header collapse="condense">
     <ion-toolbar>
-      <ion-title size="large">Home</ion-title>
+      <ion-title size="large">
+        <ion-list lines="none">
+          <ion-item class="ion-no-padding">
+            <ion-select
+              interface="action-sheet"
+              (ionChange)="changeGasType($event)"
+              [(ngModel)]="chosenGasType"
+            >
+              <ion-select-option
+                *ngFor="let gasType of gasTypes"
+                [value]="gasType['Id']"
+                >{{gasType['Descritivo']}}</ion-select-option
+              >
+            </ion-select>
+          </ion-item>
+        </ion-list>
+      </ion-title>
     </ion-toolbar>
   </ion-header>
 

@@ -17,4 +17,9 @@ export class GasService {
     const url = `https://precoscombustiveis.dgeg.gov.pt/api/PrecoComb/PesquisarPostos?idsTiposComb=${gasType}&qtdPorPagina=`;
     return this.http.get(url);
   }
+
+  getTypesOfGas(): Observable<any> {
+    const url = `https://precoscombustiveis.dgeg.gov.pt/api/PrecoComb/GetTiposCombustiveis`;
+    return this.http.get(url);
+  }
 }

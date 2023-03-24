@@ -15,9 +15,10 @@ export class HomePage implements OnInit {
   nearGasStations: Array<any> = [];
   topGasStations: Array<any> = [];
   nearCheapStations: Array<any> = [];
+  gasTypes: Array<any> = [];
 
   myLocation: any = {};
-  gasType: number = 3201;
+  chosenGasType: any = parseInt(localStorage.getItem('gasType')!) || 3201;
 
   constructor(
     private gasService: GasService,
@@ -25,6 +26,25 @@ export class HomePage implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    this.gasService.getTypesOfGas().subscribe((response) => {
+      this.gasTypes = response['resultado'];
+      this.loadStations();
+    });
+  }
+
+  getChosenGasTypeName() {
+    return this.gasTypes.find((i) => i['Id'] === this.chosenGasType)[
+      'Descritivo'
+    ];
+  }
+
+  changeGasType(e: any) {
+    localStorage.setItem('gasType', e.target.value);
+    this.loadStations();
+  }
+
+  loadStations() {
+    this.loaded = false;
     this.nearGasStations = [];
     this.topGasStations = [];
     this.nearCheapStations = [];
@@ -61,7 +81,7 @@ export class HomePage implements OnInit {
 
   loadNearGasStations() {
     this.gasService
-      .getNearestGasStations(this.gasType)
+      .getNearestGasStations(this.chosenGasType)
       .subscribe((response) => {
         this.nearGasStations = this.editPricingTag(
           this.orderByLocation(response['resultado'])
@@ -148,7 +168,7 @@ export class HomePage implements OnInit {
   // CHEAPEST STATIONS LIST
   loadCheapestGasStations() {
     this.gasService
-      .getTopGasStations(this.MAX_NUMBER_RESULTS, this.gasType)
+      .getTopGasStations(this.MAX_NUMBER_RESULTS, this.chosenGasType)
       .subscribe((response) => {
         this.topGasStations = response['resultado'];
         this.loaded = this.isEverythingLoaded();
