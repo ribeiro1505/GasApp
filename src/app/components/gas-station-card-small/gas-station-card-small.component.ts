@@ -113,6 +113,7 @@ export class GasStationCardSmallComponent {
   }
 
   public openMapsApp(location: any) {
+    if (location[0] === 0 && location[1] === 0) return;
     const geocoords = location[0] + ',' + location[1];
 
     if (this.platform.is('ios')) {
