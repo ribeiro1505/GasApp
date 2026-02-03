@@ -1,33 +1,232 @@
-ion-card-header {
+:host {
+  display: block;
+}
+
+.gas-card {
+  position: relative;
+  min-width: 280px;
+  max-width: 300px;
+  height: auto;
+  margin: 0 12px 0 0;
+  border-radius: 20px;
+  background: var(--ion-card-background);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+  cursor: pointer;
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+  }
+
+  &:active {
+    transform: translateY(-2px);
+  }
+}
+
+// Favorite Button
+.favorite-btn {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 10;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.95);
   display: flex;
-  flex-flow: column-reverse;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  transition: all 0.3s ease;
+
+  &:hover {
+    transform: scale(1.1);
+    background: white;
+  }
+
+  ion-icon {
+    font-size: 1.5rem;
+    color: var(--ion-color-medium);
+    transition: all 0.3s ease;
+
+    &.favorited {
+      color: var(--ion-color-danger);
+      animation: heartBeat 0.3s ease;
+    }
+  }
 }
 
-ion-card-title {
-  font-size: 22px;
-  margin-bottom: 10px;
-}
-
-ion-card {
-  min-width: 170px;
-  height: 90%;
-  margin: 10px;
-  margin-left: 0;
-}
-
-ion-col {
-  padding: 0;
+// Card Header
+.card-header {
+  position: relative;
+  padding: 20px;
+  background: var(--ion-color-primary);
   display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+
+  .logo-container {
+    width: 80px;
+    height: 80px;
+    background: white;
+    border-radius: 16px;
+    padding: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+
+    .station-logo {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+    }
+  }
+
+  .brand-badge {
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    color: white;
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
 }
 
-ion-card-subtitle {
-  margin: 0;
+// Card Content
+.card-content {
+  padding: 20px;
+
+  .station-name {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--ion-text-color);
+    margin-bottom: 12px;
+    line-height: 1.4;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .price-container {
+    margin-bottom: 16px;
+
+    .price {
+      font-size: 1.8rem;
+      font-weight: 800;
+      color: var(--ion-color-primary);
+      letter-spacing: -0.5px;
+    }
+  }
+
+  .card-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0;
+    border-top: 1px solid var(--ion-color-light);
+
+    .distance-info {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-weight: 600;
+      font-size: 0.95rem;
+
+      ion-icon {
+        font-size: 1.2rem;
+      }
+    }
+
+    .navigate-btn {
+      --padding-start: 8px;
+      --padding-end: 8px;
+
+      ion-icon {
+        font-size: 1.8rem;
+        color: var(--ion-color-primary);
+      }
+    }
+  }
+
+  .update-time,
+  .address {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 8px;
+    font-size: 0.8rem;
+    color: var(--ion-color-medium);
+
+    ion-icon {
+      font-size: 1rem;
+      flex-shrink: 0;
+    }
+
+    span {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+  }
+
+  .address {
+    margin-top: 4px;
+  }
 }
 
-ion-col img {
-  max-height: 90%;
-  max-width: 90%;
-  display: flex;
-  margin: auto;
-  justify-self: left;
+// Animations
+@keyframes heartBeat {
+  0% {
+    transform: scale(1);
+  }
+  25% {
+    transform: scale(1.3);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  75% {
+    transform: scale(1.3);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+// Responsive
+@media (max-width: 576px) {
+  .gas-card {
+    min-width: 260px;
+  }
+
+  .card-header {
+    padding: 16px;
+
+    .logo-container {
+      width: 70px;
+      height: 70px;
+    }
+  }
+
+  .card-content {
+    padding: 16px;
+
+    .station-name {
+      font-size: 1rem;
+    }
+
+    .price {
+      font-size: 1.6rem;
+    }
+  }
 }

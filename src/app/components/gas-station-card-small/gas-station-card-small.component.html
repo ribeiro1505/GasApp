@@ -1,25 +1,53 @@
-<ion-card
-  (click)="openMapsApp([gasStation['Latitude'], gasStation['Longitude']])"
->
-  <ion-card-header>
-    <ion-card-subtitle>{{ gasStation["Nome"] }}</ion-card-subtitle>
-    <ion-card-title>
-      <ion-row center>
-        <ion-col
-          ><img class="station-logo" src="{{ loadLogo() }}" alt="" />
-        </ion-col>
-        <ion-col>{{ gasStation["Preco"] }}</ion-col>
-      </ion-row>
-    </ion-card-title>
-  </ion-card-header>
-  <ion-card-content *ngIf="gasStation['Latitude']">
-    <ion-row bottom>
-      <ion-col>
-        {{
-          distance(location, [gasStation["Latitude"], gasStation["Longitude"]])
-        }}
-        Km
-      </ion-col>
-    </ion-row>
-  </ion-card-content>
+<ion-card class="gas-card" (click)="onCardClick()">
+  <!-- Station Logo -->
+  <div class="card-header">
+    <div class="logo-container">
+      <img [src]="loadLogo()" [alt]="getName()" class="station-logo" />
+    </div>
+    <div class="brand-badge" *ngIf="gasStation?.Marca">
+      {{ gasStation.Marca }}
+    </div>
+  </div>
+
+  <!-- Station Info -->
+  <div class="card-content">
+    <div class="station-name">{{ getName() }}</div>
+
+    <!-- Price -->
+    <div class="price-container">
+      <div class="price">{{ getPrice() }}</div>
+    </div>
+
+    <!-- Distance & Actions -->
+    <div class="card-footer">
+      <div class="distance-info" *ngIf="gasStation?.Latitude">
+        <ion-icon name="navigate" [color]="getDistanceColor()"></ion-icon>
+        <span [style.color]="'var(--ion-color-' + getDistanceColor() + ')'">
+          {{ getDistance() }} km
+        </span>
+      </div>
+
+      <!-- Navigate Button -->
+      <ion-button
+        fill="clear"
+        size="small"
+        class="navigate-btn"
+        (click)="openMapsApp($event)"
+        *ngIf="gasStation?.Latitude">
+        <ion-icon slot="icon-only" name="navigate-circle"></ion-icon>
+      </ion-button>
+    </div>
+
+    <!-- Last Update -->
+    <div class="update-time" *ngIf="gasStation?.DataAtualizacao">
+      <ion-icon name="time-outline"></ion-icon>
+      <span>{{ getLastUpdate() }}</span>
+    </div>
+
+    <!-- Address (optional) -->
+    <div class="address" *ngIf="getAddress()">
+      <ion-icon name="location-outline"></ion-icon>
+      <span>{{ getAddress() }}</span>
+    </div>
+  </div>
 </ion-card>

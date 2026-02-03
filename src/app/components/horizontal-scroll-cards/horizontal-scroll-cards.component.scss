@@ -1,19 +1,122 @@
 .horizontal-container {
-  margin-top: 10px;
+  position: relative;
+  width: 100%;
+
+  .section-title {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--ion-text-color);
+    margin: 0 0 16px 0;
+    padding: 0 4px;
+  }
+
+  .horizontal-scroll {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+
+    .scroll-content {
+      display: flex;
+      gap: 0;
+      overflow-x: auto;
+      overflow-y: hidden;
+      scroll-behavior: smooth;
+      padding: 8px 4px;
+      -webkit-overflow-scrolling: touch;
+
+      // Hide scrollbar
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+
+      &::-webkit-scrollbar {
+        display: none;
+      }
+    }
+  }
+
+  // Scroll Indicators
+  .scroll-indicators {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    transform: translateY(-50%);
+    display: flex;
+    justify-content: space-between;
+    pointer-events: none;
+    z-index: 2;
+    padding: 0 8px;
+
+    .scroll-btn {
+      pointer-events: all;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: var(--ion-card-background);
+      border: none;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      color: var(--ion-color-primary);
+
+      ion-icon {
+        font-size: 1.5rem;
+      }
+
+      &:hover:not(:disabled) {
+        background: var(--ion-color-primary);
+        color: var(--ion-color-primary-contrast);
+        transform: scale(1.1);
+      }
+
+      &:active:not(:disabled) {
+        transform: scale(0.95);
+      }
+
+      &:disabled {
+        opacity: 0.3;
+        cursor: not-allowed;
+      }
+
+      &.scroll-left {
+        margin-right: auto;
+      }
+
+      &.scroll-right {
+        margin-left: auto;
+      }
+    }
+  }
 }
 
-.section-title {
-  padding: 0 16px;
-  font-weight: bold;
-  font-size: large;
+// Responsive
+@media (max-width: 576px) {
+  .horizontal-container {
+    .section-title {
+      font-size: 1.1rem;
+    }
+
+    .scroll-indicators {
+      .scroll-btn {
+        width: 36px;
+        height: 36px;
+
+        ion-icon {
+          font-size: 1.3rem;
+        }
+      }
+    }
+  }
 }
 
-.horizontal-section {
-  display: flex;
-  flex-direction: row;
-  overflow: scroll;
-  padding: 5px 20px;
-  &::-webkit-scrollbar {
-    display: none;
+// Hide scroll indicators on mobile if not needed
+@media (max-width: 768px) {
+  .horizontal-container {
+    .scroll-indicators {
+      display: none;
+    }
   }
 }

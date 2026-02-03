@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { GasService } from 'src/app/services/gas.service';
-import { Geolocation } from '@awesome-cordova-plugins/geolocation/ngx';
+import { Geolocation } from '@capacitor/geolocation';
+import { Preferences } from '@capacitor/preferences';
 
 @Component({
   selector: 'app-home',
@@ -12,20 +13,35 @@ export class HomePage implements OnInit {
   MAX_NUMBER_RESULTS = 20;
 
   loaded = false;
+  isRefreshing = false;
   nearGasStations: Array<any> = [];
   topGasStations: Array<any> = [];
   nearCheapStations: Array<any> = [];
   gasTypes: Array<any> = [];
 
   myLocation: any = {};
-  chosenGasType: any = parseInt(localStorage.getItem('gasType')!) || 3201;
+  chosenGasType: any = 3201;
+  previousGasType: any = 3201;
+  locationPermissionDenied = false;
+  maxDistance = 10;
 
-  constructor(
-    private gasService: GasService,
-    private geolocation: Geolocation
-  ) {}
+  constructor(private gasService: GasService) {}
 
-  ngOnInit(): void {
+  async ngOnInit(): Promise<void> {
+    // Load saved gas type
+    const { value } = await Preferences.get({ key: 'gasType' });
+    if (value) {
+      this.chosenGasType = parseInt(value, 10);
+      this.previousGasType = this.chosenGasType;
+    }
+
+    // Load saved max distance
+    const { value: maxDist } = await Preferences.get({ key: 'maxDistance' });
+    if (maxDist) {
+      this.MAX_DISTANCE = parseInt(maxDist, 10);
+      this.maxDistance = this.MAX_DISTANCE;
+    }
+
     this.gasService.getTypesOfGas().subscribe((response) => {
       this.gasTypes = response['resultado'];
       this.loadStations();
@@ -33,14 +49,42 @@ export class HomePage implements OnInit {
   }
 
   getChosenGasTypeName() {
-    return this.gasTypes.find((i) => i['Id'] === this.chosenGasType)[
-      'Descritivo'
-    ];
+    const gasType = this.gasTypes.find((i) => i['Id'] === this.chosenGasType);
+    return gasType ? gasType['Descritivo'] : '';
   }
 
-  changeGasType(e: any) {
-    localStorage.setItem('gasType', e.target.value);
+  async changeGasType(e: any) {
+    const newType = e.detail.value;
+
+    if (newType && newType !== this.previousGasType) {
+      this.previousGasType = newType;
+      await Preferences.set({ key: 'gasType', value: newType.toString() });
+      this.gasService.clearCache();
+      this.loadStations();
+    }
+  }
+
+  async changeMaxDistance(event: any): Promise<void> {
+    this.MAX_DISTANCE = event.detail.value;
+    this.maxDistance = this.MAX_DISTANCE;
+    await Preferences.set({ key: 'maxDistance', value: this.MAX_DISTANCE.toString() });
+
+    // Re-filter near cheap stations with new distance
+    // Use the last loaded data
+    if (this.nearGasStations && this.nearGasStations.length > 0) {
+      // Get all stations from last API call
+      this.gasService.getNearestGasStations(this.chosenGasType).subscribe((response) => {
+        this.loadNearCheapStations(response['resultado']);
+      });
+    }
+  }
+
+  async handleRefresh(event: any): Promise<void> {
+    this.isRefreshing = true;
+    this.gasService.clearCache();
     this.loadStations();
+    this.isRefreshing = false;
+    event.target.complete();
   }
 
   loadStations() {
@@ -67,16 +111,22 @@ export class HomePage implements OnInit {
 
   // NEAREST STATIONS LIST
   loadLocation() {
-    this.geolocation
-      .getCurrentPosition()
+    Geolocation.getCurrentPosition({ enableHighAccuracy: true, timeout: 10000 })
       .then((resp) => {
         this.myLocation = [resp.coords.latitude, resp.coords.longitude];
+        this.locationPermissionDenied = false;
         this.loadNearGasStations();
       })
       .catch((error) => {
+        console.warn('Geolocation error:', error);
         this.myLocation = [38.741613027820385, -9.146299151201234];
+        this.locationPermissionDenied = true;
         this.loadNearGasStations();
       });
+  }
+
+  async requestLocationPermission(): Promise<void> {
+    this.loadLocation();
   }
 
   loadNearGasStations() {
@@ -104,17 +154,17 @@ export class HomePage implements OnInit {
   orderByLocation(response: Array<any>): Array<any> {
     return response
       .sort((a, b) => {
-        a = [a['Latitude'], a['Longitude']];
-        b = [b['Latitude'], b['Longitude']];
+        const coordsA = [a['Latitude'], a['Longitude']];
+        const coordsB = [b['Latitude'], b['Longitude']];
 
         if (
-          this.calculateDistance(this.myLocation, a) <
-          this.calculateDistance(this.myLocation, b)
+          this.calculateDistance(this.myLocation, coordsA) <
+          this.calculateDistance(this.myLocation, coordsB)
         )
           return -1;
         if (
-          this.calculateDistance(this.myLocation, a) >
-          this.calculateDistance(this.myLocation, b)
+          this.calculateDistance(this.myLocation, coordsA) >
+          this.calculateDistance(this.myLocation, coordsB)
         )
           return 1;
         return 0;
@@ -131,7 +181,7 @@ export class HomePage implements OnInit {
       (c(coords1[0] * p) *
         c(coords2[0] * p) *
         (1 - c((coords2[1] - coords1[1]) * p))) /
-        2;
+      2;
 
     return 12742 * Math.asin(Math.sqrt(a));
   }
@@ -145,7 +195,7 @@ export class HomePage implements OnInit {
             this.calculateDistance(this.myLocation, [
               obj['Latitude'],
               obj['Longitude'],
-            ]) <= this.MAX_DISTANCE
+            ]) <= this.maxDistance
           );
         })
         .sort((a, b) => {
@@ -173,5 +223,20 @@ export class HomePage implements OnInit {
         this.topGasStations = response['resultado'];
         this.loaded = this.isEverythingLoaded();
       });
+  }
+
+  // Helper methods for compatibility with template
+  toggleFavorite(station: any): void {
+    // Placeholder for favorites feature
+    console.log('Toggle favorite:', station);
+  }
+
+  viewStationDetails(station: any): void {
+    // Placeholder for station details
+    console.log('View station details:', station);
+  }
+
+  calculateSavings(price: string): number {
+    return 0; // Placeholder
   }
 }

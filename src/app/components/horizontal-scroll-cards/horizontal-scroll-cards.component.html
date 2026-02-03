@@ -1,11 +1,30 @@
-<div class="horizontal-container">
-  <div class="section-title">{{ sectionTitle }}</div>
-  <div class="horizontal-section">
-    <div *ngFor="let gasStation of gasStations">
+<div class="horizontal-container" *ngIf="gasStations && gasStations.length > 0">
+  <h3 class="section-title" *ngIf="sectionTitle">{{ sectionTitle }}</h3>
+
+  <div class="horizontal-scroll">
+    <div class="scroll-content">
       <app-gas-station-card-small
+        *ngFor="let gasStation of gasStations; trackBy: trackByStation"
         [gasStation]="gasStation"
         [location]="location"
-      ></app-gas-station-card-small>
+        (stationClicked)="onStationClicked($event)">
+      </app-gas-station-card-small>
     </div>
+  </div>
+
+  <!-- Scroll Indicators -->
+  <div class="scroll-indicators" *ngIf="showIndicators && gasStations.length > 3">
+    <button
+      class="scroll-btn scroll-left"
+      (click)="scrollLeft()"
+      [disabled]="!canScrollLeft">
+      <ion-icon name="chevron-back"></ion-icon>
+    </button>
+    <button
+      class="scroll-btn scroll-right"
+      (click)="scrollRight()"
+      [disabled]="!canScrollRight">
+      <ion-icon name="chevron-forward"></ion-icon>
+    </button>
   </div>
 </div>

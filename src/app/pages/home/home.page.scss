@@ -1,11 +1,388 @@
+// Variables - Clean, professional color scheme
+:root {
+  --app-primary: #1e88e5;
+  --app-success: #43a047;
+  --app-warning: #fb8c00;
+  --app-danger: #e53935;
+  --card-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  --card-shadow-hover: 0 4px 16px rgba(0, 0, 0, 0.15);
+  --border-radius: 16px;
+  --spacing-unit: 16px;
+}
+
+// Header
 ion-header {
-  margin-top: 25px;
+  ion-toolbar {
+    --background: var(--ion-background-color);
+    --border-width: 0;
+    padding-top: 8px;
+  }
+
+  .header-content {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-weight: 700;
+    font-size: 1.5rem;
+
+    .header-icon {
+      font-size: 1.8rem;
+      color: var(--ion-color-primary);
+    }
+
+    .app-title {
+      color: var(--ion-color-primary);
+    }
+  }
+
+  ion-button {
+    ion-icon {
+      font-size: 1.5rem;
+    }
+
+    .spinning {
+      animation: spin 1s linear infinite;
+    }
+  }
 }
 
-.home-body {
-  margin-top: 25px;
+// Content
+ion-content {
+  --background: var(--ion-background-color);
 }
 
-ion-item{
-  font-size: 25px;
+// Loading State
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 70vh;
+  gap: 20px;
+
+  ion-spinner {
+    transform: scale(2);
+  }
+
+  .loading-text {
+    font-size: 1.1rem;
+    color: var(--ion-color-medium);
+    font-weight: 500;
+  }
+}
+
+// Warning Card
+.warning-card {
+  margin: var(--spacing-unit);
+  border-radius: var(--border-radius);
+  border-left: 4px solid var(--ion-color-warning);
+  box-shadow: var(--card-shadow);
+  background: var(--ion-card-background);
+
+  .warning-content {
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+
+    ion-icon {
+      font-size: 2.5rem;
+      flex-shrink: 0;
+    }
+
+    h3 {
+      margin: 0 0 8px 0;
+      font-weight: 600;
+      font-size: 1.1rem;
+      color: var(--ion-text-color);
+    }
+
+    p {
+      margin: 0 0 12px 0;
+      color: var(--ion-color-medium);
+      font-size: 0.95rem;
+    }
+  }
+}
+
+// Content Wrapper
+.content-wrapper {
+  padding: var(--spacing-unit);
+  padding-bottom: 32px;
+}
+
+// Gas Type Selector
+.selector-container {
+  margin-bottom: var(--spacing-unit);
+  background: var(--ion-card-background);
+  border-radius: var(--border-radius);
+  padding: 16px;
+  box-shadow: var(--card-shadow);
+
+  .selector-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var(--ion-text-color);
+
+    ion-icon {
+      font-size: 1.2rem;
+      color: var(--ion-color-primary);
+    }
+  }
+
+  .gas-type-select {
+    width: 100%;
+    --padding-start: 16px;
+    --padding-end: 16px;
+    --padding-top: 12px;
+    --padding-bottom: 12px;
+    border: 1px solid var(--ion-color-light);
+    border-radius: 12px;
+    font-size: 1rem;
+    font-weight: 500;
+  }
+}
+
+// Statistics Card
+.stats-card {
+  margin: 0 0 var(--spacing-unit) 0;
+  border-radius: var(--border-radius);
+  box-shadow: var(--card-shadow);
+  background: var(--ion-card-background);
+
+  ion-card-content {
+    padding: 16px;
+  }
+
+  .stat-item {
+    text-align: center;
+    padding: 8px;
+
+    ion-icon {
+      font-size: 2rem;
+      margin-bottom: 8px;
+    }
+
+    .stat-value {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: var(--ion-text-color);
+      margin-bottom: 4px;
+    }
+
+    .stat-label {
+      font-size: 0.75rem;
+      color: var(--ion-color-medium);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      font-weight: 600;
+    }
+  }
+}
+
+// Filter Container
+.filter-container {
+  background: var(--ion-card-background);
+  border-radius: var(--border-radius);
+  padding: 16px;
+  margin-bottom: var(--spacing-unit);
+  box-shadow: var(--card-shadow);
+
+  .filter-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+    font-weight: 600;
+    color: var(--ion-text-color);
+
+    ion-icon {
+      font-size: 1.3rem;
+      color: var(--ion-color-primary);
+    }
+  }
+
+  ion-range {
+    padding: 8px 0;
+
+    ion-label {
+      font-size: 0.85rem;
+      color: var(--ion-color-medium);
+    }
+  }
+}
+
+// Section
+.section {
+  margin-bottom: calc(var(--spacing-unit) * 1.5);
+
+  .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+    padding: 0 4px;
+
+    .section-title {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+
+      ion-icon {
+        font-size: 1.5rem;
+      }
+
+      h2 {
+        margin: 0;
+        font-size: 1.3rem;
+        font-weight: 700;
+        color: var(--ion-text-color);
+      }
+    }
+
+    ion-badge {
+      font-size: 0.85rem;
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-weight: 600;
+    }
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 40px 20px;
+    background: var(--ion-card-background);
+    border-radius: var(--border-radius);
+    box-shadow: var(--card-shadow);
+
+    ion-icon {
+      font-size: 4rem;
+      color: var(--ion-color-medium);
+      margin-bottom: 16px;
+    }
+
+    p {
+      color: var(--ion-color-medium);
+      font-size: 1rem;
+      margin: 0;
+    }
+  }
+}
+
+// Tips Card
+.tips-card {
+  margin: var(--spacing-unit) 0;
+  border-radius: var(--border-radius);
+  box-shadow: var(--card-shadow);
+  background: var(--ion-card-background);
+
+  ion-card-header {
+    ion-card-title {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--ion-text-color);
+
+      ion-icon {
+        font-size: 1.5rem;
+      }
+    }
+  }
+
+  .tip-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 0;
+    font-size: 0.95rem;
+    color: var(--ion-text-color);
+
+    ion-icon {
+      font-size: 1.2rem;
+      flex-shrink: 0;
+    }
+  }
+}
+
+// Animations
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.section {
+  animation: fadeIn 0.5s ease-out;
+}
+
+// Mobile Optimization
+@media (max-width: 576px) {
+  .content-wrapper {
+    padding: 12px;
+  }
+
+  .selector-container {
+    padding: 12px;
+
+    .selector-label {
+      font-size: 0.85rem;
+
+      ion-icon {
+        font-size: 1.1rem;
+      }
+    }
+
+    .gas-type-select {
+      font-size: 0.95rem;
+    }
+  }
+
+  .stats-card {
+    .stat-item {
+      padding: 4px;
+
+      ion-icon {
+        font-size: 1.8rem;
+      }
+
+      .stat-value {
+        font-size: 1rem;
+      }
+
+      .stat-label {
+        font-size: 0.7rem;
+      }
+    }
+  }
+
+  .section-header {
+    .section-title {
+      h2 {
+        font-size: 1.1rem;
+      }
+
+      ion-icon {
+        font-size: 1.3rem;
+      }
+    }
+  }
 }
