@@ -1,11 +1,14 @@
-import {Component, Input, Output, EventEmitter} from '@angular/core';
-import {Platform} from '@ionic/angular';
+import {Component, EventEmitter, Input, Output} from '@angular/core';
+import {IonicModule, Platform} from '@ionic/angular';
 import {GasStation} from 'src/app/services/gas.service';
+import {CommonModule} from '@angular/common';
 
 @Component({
   selector: 'app-gas-station-card-small',
   templateUrl: './gas-station-card-small.component.html',
   styleUrls: ['./gas-station-card-small.component.scss'],
+  standalone: true,
+  imports: [CommonModule, IonicModule]
 })
 export class GasStationCardSmallComponent {
   @Input() gasStation!: GasStation;

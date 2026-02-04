@@ -9,9 +9,8 @@ describe('HorizontalScrollCardsComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ HorizontalScrollCardsComponent ],
-      imports: [IonicModule.forRoot()]
-    }).compileComponents();
+    imports: [IonicModule.forRoot(), HorizontalScrollCardsComponent]
+}).compileComponents();
 
     fixture = TestBed.createComponent(HorizontalScrollCardsComponent);
     component = fixture.componentInstance;

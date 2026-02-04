@@ -1,12 +1,25 @@
-import { Component, OnInit } from '@angular/core';
-import { GasService } from 'src/app/services/gas.service';
-import { Geolocation } from '@capacitor/geolocation';
-import { Preferences } from '@capacitor/preferences';
+import {Component, OnInit} from '@angular/core';
+import {GasService} from 'src/app/services/gas.service';
+import {Geolocation} from '@capacitor/geolocation';
+import {Preferences} from '@capacitor/preferences';
+import {IonicModule} from '@ionic/angular';
+import {CommonModule} from '@angular/common';
+import {FormsModule} from '@angular/forms';
+import {
+  HorizontalScrollCardsComponent
+} from '../../components/horizontal-scroll-cards/horizontal-scroll-cards.component';
 
 @Component({
   selector: 'app-home',
   templateUrl: 'home.page.html',
   styleUrls: ['home.page.scss'],
+  standalone: true,
+  imports: [
+    CommonModule,
+    FormsModule,
+    IonicModule,
+    HorizontalScrollCardsComponent
+  ]
 })
 export class HomePage implements OnInit {
   MAX_DISTANCE = 10;
@@ -19,24 +32,35 @@ export class HomePage implements OnInit {
   nearCheapStations: Array<any> = [];
   gasTypes: Array<any> = [];
 
+  // Summary stats
+  averageNearPrice: number | null = null;
+  closestDistanceKm: number | null = null;
+  // Number of stations within the selected radius
+  nearStationsWithinRadiusCount = 0;
+  // Section counters
+  nearCheapStationsCount = 0;
+  nearNearestStationsCount = 0;
+  topStationsCount = 0;
+
   myLocation: any = {};
   chosenGasType: any = 3201;
   previousGasType: any = 3201;
   locationPermissionDenied = false;
   maxDistance = 10;
 
-  constructor(private gasService: GasService) {}
+  constructor(private gasService: GasService) {
+  }
 
   async ngOnInit(): Promise<void> {
     // Load saved gas type
-    const { value } = await Preferences.get({ key: 'gasType' });
+    const {value} = await Preferences.get({key: 'gasType'});
     if (value) {
       this.chosenGasType = parseInt(value, 10);
       this.previousGasType = this.chosenGasType;
     }
 
     // Load saved max distance
-    const { value: maxDist } = await Preferences.get({ key: 'maxDistance' });
+    const {value: maxDist} = await Preferences.get({key: 'maxDistance'});
     if (maxDist) {
       this.MAX_DISTANCE = parseInt(maxDist, 10);
       this.maxDistance = this.MAX_DISTANCE;
@@ -58,7 +82,7 @@ export class HomePage implements OnInit {
 
     if (newType && newType !== this.previousGasType) {
       this.previousGasType = newType;
-      await Preferences.set({ key: 'gasType', value: newType.toString() });
+      await Preferences.set({key: 'gasType', value: newType.toString()});
       this.gasService.clearCache();
       this.loadStations();
     }
@@ -67,7 +91,7 @@ export class HomePage implements OnInit {
   async changeMaxDistance(event: any): Promise<void> {
     this.MAX_DISTANCE = event.detail.value;
     this.maxDistance = this.MAX_DISTANCE;
-    await Preferences.set({ key: 'maxDistance', value: this.MAX_DISTANCE.toString() });
+    await Preferences.set({key: 'maxDistance', value: this.MAX_DISTANCE.toString()});
 
     // Re-filter near cheap stations with new distance
     // Use the last loaded data
@@ -111,7 +135,7 @@ export class HomePage implements OnInit {
 
   // NEAREST STATIONS LIST
   loadLocation() {
-    Geolocation.getCurrentPosition({ enableHighAccuracy: true, timeout: 10000 })
+    Geolocation.getCurrentPosition({enableHighAccuracy: true, timeout: 10000})
       .then((resp) => {
         this.myLocation = [resp.coords.latitude, resp.coords.longitude];
         this.locationPermissionDenied = false;
@@ -133,10 +157,35 @@ export class HomePage implements OnInit {
     this.gasService
       .getNearestGasStations(this.chosenGasType)
       .subscribe((response) => {
-        this.nearGasStations = this.editPricingTag(
-          this.orderByLocation(response['resultado'])
-        );
-        this.loadNearCheapStations(response['resultado']);
+        const allStations = response['resultado'] || [];
+
+        // Sort by distance and keep only the first MAX_NUMBER_RESULTS for display
+        const orderedStations = this.orderByLocation(allStations);
+        this.nearGasStations = this.editPricingTag(orderedStations);
+
+        // Number of stations actually displayed in the "Mais Perto" section
+        this.nearNearestStationsCount = this.nearGasStations.length;
+
+        // Compute closest distance from the ordered list (already nearest-first)
+        if (this.nearGasStations.length > 0) {
+          const first = this.nearGasStations[0];
+          const coords = [first['Latitude'], first['Longitude']];
+          this.closestDistanceKm = this.calculateDistance(this.myLocation, coords);
+        } else {
+          this.closestDistanceKm = null;
+        }
+
+        // Average price across the displayed nearest stations
+        if (this.nearGasStations.length > 0) {
+          const sum = this.nearGasStations.reduce((acc, station) => {
+            return acc + this.gasService.parsePrice(station['Preco']);
+          }, 0);
+          this.averageNearPrice = sum / this.nearGasStations.length;
+        } else {
+          this.averageNearPrice = null;
+        }
+
+        this.loadNearCheapStations(allStations);
 
         this.loaded = this.isEverythingLoaded();
       });
@@ -188,30 +237,38 @@ export class HomePage implements OnInit {
 
   // CHEAPEST AND NEAREST STATIONS LIST
   loadNearCheapStations(stations: Array<any>) {
-    this.nearCheapStations = this.editPricingTag(
-      stations
-        .filter((obj) => {
-          return (
-            this.calculateDistance(this.myLocation, [
-              obj['Latitude'],
-              obj['Longitude'],
-            ]) <= this.maxDistance
-          );
-        })
-        .sort((a, b) => {
-          const priceA = parseFloat(
-            a['Preco'].replace(/,/g, '.').slice(0, a['Preco'].indexOf('€') - 1)
-          );
-          const priceB = parseFloat(
-            b['Preco'].replace(/,/g, '.').slice(0, b['Preco'].indexOf('€') - 1)
-          );
+    // All stations within the selected radius
+    const withinRadius = stations.filter((obj) => {
+      return (
+        this.calculateDistance(this.myLocation, [
+          obj['Latitude'],
+          obj['Longitude'],
+        ]) <= this.maxDistance
+      );
+    });
 
-          if (priceA < priceB) return -1;
-          if (priceA > priceB) return 1;
-          return 0;
-        })
-        .slice(0, this.MAX_NUMBER_RESULTS)
-    );
+    // Global counter for "nearby" stations (used in the summary card)
+    this.nearStationsWithinRadiusCount = withinRadius.length;
+
+    // Sorted and limited list for the "Mais Baratas Perto de Ti" section
+    const sortedByPrice = withinRadius
+      .sort((a, b) => {
+        const priceA = parseFloat(
+          a['Preco'].replace(/,/g, '.').slice(0, a['Preco'].indexOf('€') - 1)
+        );
+        const priceB = parseFloat(
+          b['Preco'].replace(/,/g, '.').slice(0, b['Preco'].indexOf('€') - 1)
+        );
+
+        if (priceA < priceB) return -1;
+        if (priceA > priceB) return 1;
+        return 0;
+      })
+      .slice(0, this.MAX_NUMBER_RESULTS);
+
+    this.nearCheapStations = this.editPricingTag(sortedByPrice);
+    this.nearCheapStationsCount = this.nearCheapStations.length;
+
     this.loaded = this.isEverythingLoaded();
   }
 
@@ -220,7 +277,9 @@ export class HomePage implements OnInit {
     this.gasService
       .getTopGasStations(this.MAX_NUMBER_RESULTS, this.chosenGasType)
       .subscribe((response) => {
-        this.topGasStations = response['resultado'];
+        const result = response['resultado'] || [];
+        this.topGasStations = result;
+        this.topStationsCount = result.length;
         this.loaded = this.isEverythingLoaded();
       });
   }
@@ -238,5 +297,19 @@ export class HomePage implements OnInit {
 
   calculateSavings(price: string): number {
     return 0; // Placeholder
+  }
+
+  getAverageNearPriceLabel(): string {
+    if (this.averageNearPrice == null) {
+      return '-';
+    }
+    return this.gasService.formatPrice(this.averageNearPrice);
+  }
+
+  getClosestDistanceLabel(): string {
+    if (this.closestDistanceKm == null) {
+      return '-';
+    }
+    return `${this.closestDistanceKm.toFixed(1)} km`;
   }
 }

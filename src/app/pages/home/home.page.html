@@ -78,21 +78,21 @@
             <ion-col size="4">
               <div class="stat-item">
                 <ion-icon name="pricetag" color="primary"></ion-icon>
-                <div class="stat-value">{{ topGasStations[0]?.Preco || '-' }}</div>
-                <div class="stat-label">Mais Barato</div>
+                <div class="stat-value">{{ getAverageNearPriceLabel() }}</div>
+                <div class="stat-label">Preço Médio Perto</div>
               </div>
             </ion-col>
             <ion-col size="4">
               <div class="stat-item">
                 <ion-icon name="location" color="success"></ion-icon>
-                <div class="stat-value">{{ (nearGasStations[0]?.distance || 0).toFixed(1) }} km</div>
+                <div class="stat-value">{{ getClosestDistanceLabel() }}</div>
                 <div class="stat-label">Mais Perto</div>
               </div>
             </ion-col>
             <ion-col size="4">
               <div class="stat-item">
                 <ion-icon name="business" color="tertiary"></ion-icon>
-                <div class="stat-value">{{ nearGasStations.length }}</div>
+                <div class="stat-value">{{ nearStationsWithinRadiusCount }}</div>
                 <div class="stat-label">Postos</div>
               </div>
             </ion-col>
@@ -127,7 +127,7 @@
           <ion-icon name="flash" color="warning"></ion-icon>
           <h2>Mais Baratas Perto de Ti</h2>
         </div>
-        <ion-badge color="primary">{{ nearCheapStations.length }}</ion-badge>
+        <ion-badge color="primary">{{ nearCheapStationsCount }}</ion-badge>
       </div>
 
       <app-horizontal-scroll-cards
@@ -152,7 +152,7 @@
           <ion-icon name="navigate" color="success"></ion-icon>
           <h2>Mais Perto</h2>
         </div>
-        <ion-badge color="success">{{ nearGasStations.length }}</ion-badge>
+        <ion-badge color="success">{{ nearNearestStationsCount }}</ion-badge>
       </div>
 
       <app-horizontal-scroll-cards
@@ -172,7 +172,7 @@
           <ion-icon name="trending-down" color="primary"></ion-icon>
           <h2>Mais Baratas</h2>
         </div>
-        <ion-badge color="primary">{{ topGasStations.length }}</ion-badge>
+        <ion-badge color="primary">{{ topStationsCount }}</ion-badge>
       </div>
 
       <app-horizontal-scroll-cards

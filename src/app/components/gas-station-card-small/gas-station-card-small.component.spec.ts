@@ -9,9 +9,8 @@ describe('GasStationCardSmallComponent', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ GasStationCardSmallComponent ],
-      imports: [IonicModule.forRoot()]
-    }).compileComponents();
+    imports: [IonicModule.forRoot(), GasStationCardSmallComponent]
+}).compileComponents();
 
     fixture = TestBed.createComponent(GasStationCardSmallComponent);
     component = fixture.componentInstance;
