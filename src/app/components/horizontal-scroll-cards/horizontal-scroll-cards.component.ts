@@ -2,14 +2,18 @@ import {Component, ElementRef, EventEmitter, Input, Output, ViewChild,} from '@a
 import {GasStation} from 'src/app/services/gas.service';
 import {CommonModule} from '@angular/common';
 import {GasStationCardSmallComponent} from '../gas-station-card-small/gas-station-card-small.component';
-import {IonicModule} from '@ionic/angular';
+import {IonIcon} from "@ionic/angular/standalone";
 
 @Component({
   selector: 'app-horizontal-scroll-cards',
   templateUrl: './horizontal-scroll-cards.component.html',
   styleUrls: ['./horizontal-scroll-cards.component.scss'],
   standalone: true,
-  imports: [CommonModule, IonicModule, GasStationCardSmallComponent]
+  imports: [
+    CommonModule,
+    GasStationCardSmallComponent,
+    IonIcon
+  ]
 })
 export class HorizontalScrollCardsComponent {
   @Input() sectionTitle = '';

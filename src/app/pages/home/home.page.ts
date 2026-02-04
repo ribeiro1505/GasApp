@@ -2,12 +2,25 @@ import {Component, OnInit} from '@angular/core';
 import {GasService} from 'src/app/services/gas.service';
 import {Geolocation} from '@capacitor/geolocation';
 import {Preferences} from '@capacitor/preferences';
-import {IonicModule} from '@ionic/angular';
 import {CommonModule} from '@angular/common';
 import {FormsModule} from '@angular/forms';
 import {
-  HorizontalScrollCardsComponent
-} from '../../components/horizontal-scroll-cards/horizontal-scroll-cards.component';
+  GasStationCardSmallComponent
+} from '../../components/gas-station-card-small/gas-station-card-small.component';
+import {
+  IonButton,
+  IonButtons,
+  IonContent,
+  IonHeader,
+  IonIcon,
+  IonRefresher,
+  IonRefresherContent,
+  IonSelect,
+  IonSelectOption,
+  IonSpinner,
+  IonTitle,
+  IonToolbar
+} from "@ionic/angular/standalone";
 
 @Component({
   selector: 'app-home',
@@ -17,8 +30,19 @@ import {
   imports: [
     CommonModule,
     FormsModule,
-    IonicModule,
-    HorizontalScrollCardsComponent
+    GasStationCardSmallComponent,
+    IonHeader,
+    IonToolbar,
+    IonTitle,
+    IonIcon,
+    IonButtons,
+    IonButton,
+    IonContent,
+    IonSpinner,
+    IonRefresher,
+    IonRefresherContent,
+    IonSelect,
+    IonSelectOption
   ]
 })
 export class HomePage implements OnInit {
@@ -41,6 +65,11 @@ export class HomePage implements OnInit {
   nearCheapStationsCount = 0;
   nearNearestStationsCount = 0;
   topStationsCount = 0;
+
+  // Expandable sections
+  visibleCount = 5;
+  cheapExpanded = false;
+  nearExpanded = false;
 
   myLocation: any = {};
   chosenGasType: any = 3201;
@@ -114,20 +143,16 @@ export class HomePage implements OnInit {
   loadStations() {
     this.loaded = false;
     this.nearGasStations = [];
-    this.topGasStations = [];
     this.nearCheapStations = [];
 
     this.loadLocation();
     this.loadNearGasStations();
-    this.loadCheapestGasStations();
   }
 
   isEverythingLoaded(): boolean {
     return (
       this.nearGasStations &&
       this.nearGasStations.length > 0 &&
-      this.topGasStations &&
-      this.topGasStations.length > 0 &&
       this.nearCheapStations &&
       this.nearCheapStations.length > 0
     );
@@ -311,5 +336,12 @@ export class HomePage implements OnInit {
       return '-';
     }
     return `${this.closestDistanceKm.toFixed(1)} km`;
+  }
+
+  getVisibleStations(stations: Array<any>, expanded: boolean): Array<any> {
+    if (expanded) {
+      return stations;
+    }
+    return stations.slice(0, this.visibleCount);
   }
 }

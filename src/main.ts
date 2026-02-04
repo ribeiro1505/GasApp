@@ -16,7 +16,7 @@ import {
   sadOutline,
   navigateCircleOutline,
   navigate,
-  trendingDown, navigateCircle, timeOutline, chevronBack, chevronForward,
+  trendingDown, navigateCircle, timeOutline, chevronBack, chevronForward, arrowForward, chevronUp, chevronDown,
 } from 'ionicons/icons';
 
 import { routes } from './app/app.routes';
@@ -42,6 +42,9 @@ addIcons({
   timeOutline,
   chevronBack,
   chevronForward,
+  chevronUp,
+  chevronDown,
+  arrowForward
 });
 
 if (environment.production) {

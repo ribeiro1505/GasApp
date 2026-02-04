@@ -1,53 +1,23 @@
-<ion-card class="gas-card" (click)="onCardClick()">
-  <!-- Station Logo -->
-  <div class="card-header">
-    <div class="logo-container">
-      <img [src]="loadLogo()" [alt]="getName()" class="station-logo" />
-    </div>
-    <div class="brand-badge" *ngIf="gasStation?.Marca">
-      {{ gasStation.Marca }}
-    </div>
+<div class="station-card" (click)="openMapsApp($event)">
+  <!-- Left: Logo -->
+  <div class="card-logo">
+    <img [src]="loadLogo()" [alt]="getName()" />
   </div>
 
-  <!-- Station Info -->
-  <div class="card-content">
+  <!-- Center: Info -->
+  <div class="card-info">
     <div class="station-name">{{ getName() }}</div>
-
-    <!-- Price -->
-    <div class="price-container">
-      <div class="price">{{ getPrice() }}</div>
-    </div>
-
-    <!-- Distance & Actions -->
-    <div class="card-footer">
-      <div class="distance-info" *ngIf="gasStation?.Latitude">
-        <ion-icon name="navigate" [color]="getDistanceColor()"></ion-icon>
-        <span [style.color]="'var(--ion-color-' + getDistanceColor() + ')'">
-          {{ getDistance() }} km
-        </span>
-      </div>
-
-      <!-- Navigate Button -->
-      <ion-button
-        fill="clear"
-        size="small"
-        class="navigate-btn"
-        (click)="openMapsApp($event)"
-        *ngIf="gasStation?.Latitude">
-        <ion-icon slot="icon-only" name="navigate-circle"></ion-icon>
-      </ion-button>
-    </div>
-
-    <!-- Last Update -->
-    <div class="update-time" *ngIf="gasStation?.DataAtualizacao">
-      <ion-icon name="time-outline"></ion-icon>
-      <span>{{ getLastUpdate() }}</span>
-    </div>
-
-    <!-- Address (optional) -->
-    <div class="address" *ngIf="getAddress()">
-      <ion-icon name="location-outline"></ion-icon>
-      <span>{{ getAddress() }}</span>
+    <div class="station-distance" *ngIf="gasStation?.Latitude">
+      <ion-icon name="navigate" [color]="getDistanceColor()"></ion-icon>
+      <span>{{ getDistance() }} km</span>
     </div>
   </div>
-</ion-card>
+
+  <!-- Right: Price & Go Button -->
+  <div class="card-action">
+    <div class="price">{{ getPrice() }}</div>
+    <div class="go-button">
+      <ion-icon name="arrow-forward"></ion-icon>
+    </div>
+  </div>
+</div>

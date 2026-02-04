@@ -1,6 +1,5 @@
-import { Routes } from '@angular/router';
-import { TabsPage } from './components/tabs/tabs.page';
-import { HomePage } from './pages/home/home.page';
+import {Routes} from '@angular/router';
+import {HomePage} from './pages/home/home.page';
 
 /**
  * Note:
@@ -13,7 +12,7 @@ import { HomePage } from './pages/home/home.page';
 export const routes: Routes = [
   {
     path: '',
-    component: TabsPage,
+    component: HomePage,
     children: [
       {
         path: 'home',
