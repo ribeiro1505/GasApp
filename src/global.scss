@@ -30,7 +30,36 @@
   top: 50%;
 }
 
-ion-content{
+ion-content {
   max-width: 1000px;
   align-self: center;
+  --keyboard-offset: 0 !important;
+}
+
+/* Hide scrollbar in ion-content shadow DOM */
+ion-content {
+  &::-webkit-scrollbar,
+  &::part(scroll)::-webkit-scrollbar {
+    width: 0;
+    display: none;
+  }
+}
+
+/* Target the inner scroll container in ion-content */
+ion-content::part(scroll) {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  overflow-y: scroll;
+}
+
+/* Global scrollbar hide for webkit */
+::-webkit-scrollbar {
+  width: 0px;
+  height: 0px;
+  background: transparent;
+}
+
+/* Firefox */
+html, body, * {
+  scrollbar-width: none;
 }

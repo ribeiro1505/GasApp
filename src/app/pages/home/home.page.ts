@@ -1,4 +1,6 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ViewChild, AfterViewChecked} from '@angular/core';
+
+declare const L: any;
 import {GasService} from 'src/app/services/gas.service';
 import {Geolocation} from '@capacitor/geolocation';
 import {Preferences} from '@capacitor/preferences';
@@ -13,6 +15,7 @@ import {
   IonContent,
   IonHeader,
   IonIcon,
+  IonRange,
   IonRefresher,
   IonRefresherContent,
   IonSelect,
@@ -42,12 +45,19 @@ import {
     IonRefresher,
     IonRefresherContent,
     IonSelect,
-    IonSelectOption
+    IonSelectOption,
+    IonRange
   ]
 })
-export class HomePage implements OnInit {
+export class HomePage implements OnInit, AfterViewChecked {
+  @ViewChild('fuelSelect') fuelSelect!: IonSelect;
+
   MAX_DISTANCE = 10;
   MAX_NUMBER_RESULTS = 20;
+
+  // Map
+  private map: any;
+  private mapInitialized = false;
 
   loaded = false;
   isRefreshing = false;
@@ -103,7 +113,11 @@ export class HomePage implements OnInit {
 
   getChosenGasTypeName() {
     const gasType = this.gasTypes.find((i) => i['Id'] === this.chosenGasType);
-    return gasType ? gasType['Descritivo'] : '';
+    return gasType ? gasType['Descritivo'] : 'Selecionar';
+  }
+
+  openFuelSelect() {
+    this.fuelSelect.open();
   }
 
   async changeGasType(e: any) {
@@ -128,6 +142,8 @@ export class HomePage implements OnInit {
       // Get all stations from last API call
       this.gasService.getNearestGasStations(this.chosenGasType).subscribe((response) => {
         this.loadNearCheapStations(response['resultado']);
+        // Update map with new filtered stations
+        setTimeout(() => this.updateMap(), 100);
       });
     }
   }
@@ -144,6 +160,13 @@ export class HomePage implements OnInit {
     this.loaded = false;
     this.nearGasStations = [];
     this.nearCheapStations = [];
+
+    // Reset map state so it can be re-initialized
+    if (this.map) {
+      this.map.remove();
+      this.map = null;
+    }
+    this.mapInitialized = false;
 
     this.loadLocation();
     this.loadNearGasStations();
@@ -343,5 +366,219 @@ export class HomePage implements OnInit {
       return stations;
     }
     return stations.slice(0, this.visibleCount);
+  }
+
+  formatDistancePin = (value: number) => {
+    return `${value} km`;
+  }
+
+  ngAfterViewChecked(): void {
+    if (this.loaded && !this.mapInitialized && this.getAllStationsForMap().length > 0) {
+      setTimeout(() => this.initMap(), 100);
+    }
+  }
+
+  getAllStationsForMap(): Array<any> {
+    // Only show half of the stations from "Mais perto" section
+    const stations = this.nearGasStations || [];
+    const half = Math.ceil(stations.length / 2);
+    return stations.slice(0, half);
+  }
+
+  private initMap(): void {
+    const mapElement = document.getElementById('map');
+    if (!mapElement || this.mapInitialized) return;
+
+    this.mapInitialized = true;
+
+    // Initialize map centered on user location
+    const lat = this.myLocation[0] || 38.7;
+    const lng = this.myLocation[1] || -9.1;
+
+    this.map = L.map('map').setView([lat, lng], 13);
+
+    // Add tile layer (OpenStreetMap)
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '© OpenStreetMap'
+    }).addTo(this.map);
+
+    // Add user location marker
+    const userIcon = L.divIcon({
+      className: 'user-marker',
+      html: '<div style="width:16px;height:16px;background:#1e88e5;border:3px solid white;border-radius:50%;box-shadow:0 2px 6px rgba(0,0,0,0.3);"></div>',
+      iconSize: [16, 16],
+      iconAnchor: [8, 8]
+    });
+    L.marker([lat, lng], { icon: userIcon }).addTo(this.map).bindPopup('A sua localização');
+
+    // Add station markers
+    this.addStationMarkers();
+
+    // Fit bounds to show all markers
+    this.fitMapBounds();
+  }
+
+  private addStationMarkers(): void {
+    const stations = this.getAllStationsForMap();
+
+    stations.forEach((station, index) => {
+      if (!station.Latitude || !station.Longitude) return;
+
+      const price = station.Preco?.split('/')[0]?.trim() || station.Preco || '';
+      const logoUrl = this.getStationLogo(station);
+
+      // Determine marker color - green for cheapest in this list
+      let bgColor = '#1e88e5'; // primary blue
+
+      // Find cheapest station to highlight it
+      const cheapestPrice = Math.min(...stations.map(s => this.parseStationPrice(s)));
+      const currentPrice = this.parseStationPrice(station);
+      if (currentPrice === cheapestPrice) {
+        bgColor = '#43a047'; // green for cheapest
+      }
+
+      const markerHtml = `
+        <div style="
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          filter: drop-shadow(0 3px 6px rgba(0,0,0,0.4));
+        ">
+          <div style="
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: ${bgColor};
+            color: white;
+            padding: 6px 10px;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 800;
+            white-space: nowrap;
+            border: 2px solid white;
+          ">
+            <img src="${logoUrl}" style="width:20px;height:20px;border-radius:4px;background:white;object-fit:contain;" onerror="this.style.display='none'" />
+            <span>${price}</span>
+          </div>
+          <div style="
+            width: 0;
+            height: 0;
+            border-left: 8px solid transparent;
+            border-right: 8px solid transparent;
+            border-top: 8px solid ${bgColor};
+            margin-top: -2px;
+          "></div>
+        </div>
+      `;
+
+      const priceIcon = L.divIcon({
+        className: 'station-marker',
+        html: markerHtml,
+        iconSize: [100, 50],
+        iconAnchor: [50, 50]
+      });
+
+      const marker = L.marker([station.Latitude, station.Longitude], { icon: priceIcon })
+        .addTo(this.map);
+
+      // Add popup with station info
+      marker.bindPopup(`
+        <div style="text-align:center;min-width:150px;">
+          <img src="${logoUrl}" style="width:40px;height:40px;border-radius:8px;margin-bottom:8px;object-fit:contain;" onerror="this.style.display='none'" />
+          <div style="font-weight:700;font-size:14px;margin-bottom:4px;">${station.Nome || 'Posto'}</div>
+          <div style="font-size:18px;font-weight:800;color:#1e88e5;margin-bottom:4px;">${station.Preco}</div>
+          <div style="font-size:12px;color:#666;">${station.Morada || station.Localidade || ''}</div>
+        </div>
+      `);
+    });
+  }
+
+  private parseStationPrice(station: any): number {
+    if (!station?.Preco) return Infinity;
+    const priceStr = station.Preco.replace(/[^\d,\.]/g, '').replace(',', '.');
+    return parseFloat(priceStr) || Infinity;
+  }
+
+  private getStationLogo(station: any): string {
+    const defaultLogo = 'https://cdn-icons-png.flaticon.com/512/2698/2698011.png';
+    const logos: Record<string, string> = {
+      'galp': 'https://play-lh.googleusercontent.com/c35iec9F_7Hb2YCKY1wMyxy1kcp8A9JdbGw2v7R2hgOQm4jGxSTKASEt0zgJAxgBgbU',
+      'bp': 'https://upload.wikimedia.org/wikipedia/en/thumb/d/d2/BP_Helios_logo.svg/1200px-BP_Helios_logo.svg.png',
+      'prio': 'https://cdn.cookielaw.org/logos/f3b87880-8639-4d8d-8936-b332ceb16fe9/d45e2d7b-bd89-4f8b-9ecb-24e69a30d35f/4841f480-ee75-4b8b-804a-bd1fa672698a/prio_logo.jpeg',
+      'rede energia': 'https://www.redeenergia.pt/wp-content/themes/understrap-child-master/img/og-thumb-2.png',
+      'leclerc': 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/ed/Logo_E.Leclerc_Sans_le_texte.svg/1200px-Logo_E.Leclerc_Sans_le_texte.svg.png',
+      'intermarché': 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a3/Intermarch%C3%A9_logo_2009.svg/1200px-Intermarch%C3%A9_logo_2009.svg.png',
+      'intermarche': 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a3/Intermarch%C3%A9_logo_2009.svg/1200px-Intermarch%C3%A9_logo_2009.svg.png',
+      'auchan': 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/38/Auchan_logo.svg/1200px-Auchan_logo.svg.png',
+      'repsol': 'https://upload.wikimedia.org/wikipedia/commons/a/ab/Repsol_2025_%28Isotype%29.svg',
+      'ecobrent': 'https://www.ecobrent.com/imagens/logo.png',
+      'shell': 'https://upload.wikimedia.org/wikipedia/en/thumb/e/e8/Shell_logo.svg/1200px-Shell_logo.svg.png',
+      'cepsa': 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/8c/Cepsa_logo.svg/1200px-Cepsa_logo.svg.png',
+      'pingo doce': 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQoHstOh2cOVlmMSLTJyBpuo9kgxfMAnOFYdw&s',
+      'petroprix': 'https://petroprix.pt/wp-content/uploads/2022/09/petroprix_logo.jpg',
+      'moeve': 'https://logowik.com/content/uploads/images/moeve9729.logowik.com.webp',
+      'alves bandeira': 'https://play-lh.googleusercontent.com/B_f5GP-3sd5tywdSwoCis-zkYzTV8jPhD6owV3XG-FSActQyXDn67ylqcRoM0OfGbWQQ',
+      'recheio': 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRZrz1UJ42U0k7IS7LEJ84eO4Vl6BtdcqwieA&s',
+      'plenergy': 'https://play-lh.googleusercontent.com/bYTqEuVqdhm_T5RYEPHNleoI7X04rU7ztajvbbMjxhsYNlyIjcREtTFzg7BecZfVYwk',
+    };
+
+    const marca = (station.Marca || '').toLowerCase();
+    const nome = (station.Nome || '').toLowerCase();
+
+    for (const [key, url] of Object.entries(logos)) {
+      if (marca.includes(key) || nome.includes(key)) {
+        return url;
+      }
+    }
+    return defaultLogo;
+  }
+
+  private fitMapBounds(): void {
+    const stations = this.getAllStationsForMap();
+    if (stations.length === 0) return;
+
+    const bounds = L.latLngBounds([]);
+
+    // Add user location
+    if (this.myLocation[0] && this.myLocation[1]) {
+      bounds.extend([this.myLocation[0], this.myLocation[1]]);
+    }
+
+    // Add all stations
+    stations.forEach(station => {
+      if (station.Latitude && station.Longitude) {
+        bounds.extend([station.Latitude, station.Longitude]);
+      }
+    });
+
+    if (bounds.isValid()) {
+      this.map.fitBounds(bounds, { padding: [30, 30] });
+    }
+  }
+
+  private updateMap(): void {
+    if (!this.map) return;
+
+    // Clear existing markers except user location
+    this.map.eachLayer((layer: any) => {
+      if (layer instanceof L.Marker || layer._icon?.classList?.contains('price-marker')) {
+        this.map.removeLayer(layer);
+      }
+    });
+
+    // Re-add user marker
+    const lat = this.myLocation[0] || 38.7;
+    const lng = this.myLocation[1] || -9.1;
+    const userIcon = L.divIcon({
+      className: 'user-marker',
+      html: '<div style="width:16px;height:16px;background:#1e88e5;border:3px solid white;border-radius:50%;box-shadow:0 2px 6px rgba(0,0,0,0.3);"></div>',
+      iconSize: [16, 16],
+      iconAnchor: [8, 8]
+    });
+    L.marker([lat, lng], { icon: userIcon }).addTo(this.map).bindPopup('A sua localização');
+
+    // Re-add station markers
+    this.addStationMarkers();
+    this.fitMapBounds();
   }
 }

@@ -1,23 +1,18 @@
 <div class="station-card" (click)="openMapsApp($event)">
-  <!-- Left: Logo -->
-  <div class="card-logo">
-    <img [src]="loadLogo()" [alt]="getName()" />
+  <!-- Price Badge -->
+  <div class="price-badge">
+    <span class="price">{{ getPrice() }}</span>
   </div>
 
-  <!-- Center: Info -->
-  <div class="card-info">
+  <!-- Station Info -->
+  <div class="station-info">
+    <img [src]="loadLogo()" [alt]="getName()" class="station-logo" />
     <div class="station-name">{{ getName() }}</div>
-    <div class="station-distance" *ngIf="gasStation?.Latitude">
-      <ion-icon name="navigate" [color]="getDistanceColor()"></ion-icon>
-      <span>{{ getDistance() }} km</span>
-    </div>
   </div>
 
-  <!-- Right: Price & Go Button -->
-  <div class="card-action">
-    <div class="price">{{ getPrice() }}</div>
-    <div class="go-button">
-      <ion-icon name="arrow-forward"></ion-icon>
-    </div>
+  <!-- Distance -->
+  <div class="distance-row" *ngIf="gasStation?.Latitude">
+    <ion-icon name="location" [color]="getDistanceColor()"></ion-icon>
+    <span class="distance-text">{{ getDistance() }} km</span>
   </div>
 </div>

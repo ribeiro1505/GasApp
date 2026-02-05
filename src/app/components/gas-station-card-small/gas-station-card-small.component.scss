@@ -1,142 +1,92 @@
 :host {
   display: block;
-  width: 100%;
 }
 
 .station-card {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  padding: 16px;
-  background: var(--ion-card-background, var(--ion-item-background));
-  border-radius: 16px;
-  box-shadow: 0 2px 8px rgba(var(--ion-text-color-rgb, 0, 0, 0), 0.08);
-  cursor: pointer;
-  transition: all 0.2s ease;
-  min-height: 80px;
-
-  &:active {
-    transform: scale(0.98);
-    opacity: 0.9;
-  }
-}
-
-// Logo
-.card-logo {
-  flex-shrink: 0;
-  width: 52px;
-  height: 52px;
-  background: var(--ion-color-light);
-  border-radius: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 8px;
-
-  img {
-    max-width: 100%;
-    max-height: 100%;
-    object-fit: contain;
-  }
-}
-
-// Info Section
-.card-info {
-  flex: 1;
-  min-width: 0;
+  position: relative;
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  align-items: center;
+  height: 100%;
+  min-height: 160px;
+  padding: 20px 16px 16px;
+  background: var(--ion-card-background, var(--ion-item-background));
+  border-radius: 20px;
+  box-shadow: 0 4px 16px rgba(var(--ion-text-color-rgb, 0, 0, 0), 0.08);
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 
-  .station-name {
-    font-size: 0.95rem;
-    font-weight: 600;
-    color: var(--ion-text-color);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    line-height: 1.3;
-  }
-
-  .station-distance {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    font-size: 0.85rem;
-    font-weight: 600;
-
-    ion-icon {
-      font-size: 1rem;
-    }
-
-    span {
-      color: var(--ion-color-medium);
-    }
+  &:active {
+    transform: scale(0.96);
   }
 }
 
-// Action Section (Price + Go)
-.card-action {
-  flex-shrink: 0;
-  display: flex;
-  align-items: center;
-  gap: 12px;
+// Price Badge - prominent at top
+.price-badge {
+  position: absolute;
+  top: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--ion-color-primary);
+  padding: 6px 16px;
+  border-radius: 20px;
+  box-shadow: 0 2px 8px rgba(var(--ion-color-primary-rgb, 30, 136, 229), 0.4);
 
   .price {
-    font-size: 1.4rem;
+    font-size: 1rem;
     font-weight: 800;
-    color: var(--ion-color-primary);
-    letter-spacing: -0.5px;
+    color: var(--ion-color-primary-contrast);
     white-space: nowrap;
-  }
-
-  .go-button {
-    width: 44px;
-    height: 44px;
-    background: var(--ion-color-primary);
-    border-radius: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.2s ease;
-
-    ion-icon {
-      font-size: 1.4rem;
-      color: var(--ion-color-primary-contrast);
-    }
-
-    &:active {
-      transform: scale(0.95);
-    }
   }
 }
 
-// Responsive
-@media (max-width: 380px) {
-  .station-card {
-    padding: 12px;
-    gap: 10px;
+// Station Info - logo and name
+.station-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 16px;
+  flex: 1;
+
+  .station-logo {
+    width: 56px;
+    height: 56px;
+    object-fit: contain;
+    border-radius: 12px;
+    background: var(--ion-color-light);
+    padding: 8px;
+    margin-bottom: 10px;
   }
 
-  .card-logo {
-    width: 44px;
-    height: 44px;
+  .station-name {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--ion-text-color);
+    text-align: center;
+    line-height: 1.3;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    max-width: 100%;
+  }
+}
+
+// Distance Row
+.distance-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: auto;
+  padding-top: 12px;
+
+  ion-icon {
+    font-size: 1rem;
   }
 
-  .card-info .station-name {
-    font-size: 0.9rem;
-  }
-
-  .card-action {
-    gap: 8px;
-
-    .price {
-      font-size: 1.2rem;
-    }
-
-    .go-button {
-      width: 40px;
-      height: 40px;
-    }
+  .distance-text {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--ion-color-medium);
   }
 }
