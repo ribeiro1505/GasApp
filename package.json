@@ -65,5 +65,8 @@
     "ts-node": "~10.9.2",
     "typescript": "~5.8.3"
   },
-  "description": "An Ionic project"
+  "description": "An Ionic project",
+  "overrides": {
+    "rollup": "^4.59.0"
+  }
 }
