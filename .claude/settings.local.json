@@ -6,7 +6,9 @@
       "Bash(sips:*)",
       "Bash(npx:*)",
       "Bash(npm audit:*)",
-      "Bash(npm show:*)"
+      "Bash(npm show:*)",
+      "Bash(node:*)",
+      "Bash(npm view:*)"
     ]
   }
 }

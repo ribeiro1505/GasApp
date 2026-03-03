@@ -13,12 +13,12 @@
   },
   "private": true,
   "dependencies": {
-    "@angular/common": "^19.2.18",
-    "@angular/core": "^19.2.18",
-    "@angular/forms": "^19.2.18",
-    "@angular/platform-browser": "^19.2.18",
-    "@angular/platform-browser-dynamic": "^19.2.18",
-    "@angular/router": "^19.2.18",
+    "@angular/common": "^19.2.19",
+    "@angular/core": "^19.2.19",
+    "@angular/forms": "^19.2.19",
+    "@angular/platform-browser": "^19.2.19",
+    "@angular/platform-browser-dynamic": "^19.2.19",
+    "@angular/router": "^19.2.19",
     "@awesome-cordova-plugins/geolocation": "^6.3.0",
     "@capacitor/app": "^6.0.0",
     "@capacitor/core": "^6.0.0",
@@ -32,7 +32,7 @@
     "esbuild": "^0.27.2",
     "ionicons": "^7.0.0",
     "rxjs": "~7.8.0",
-    "tar": "^7.5.7",
+    "tar": "^7.5.9",
     "tmp": "^0.2.5",
     "tslib": "^2.6.0",
     "zone.js": "~0.15.1"
@@ -45,9 +45,9 @@
     "@angular-eslint/schematics": "^18.0.0",
     "@angular-eslint/template-parser": "^18.0.0",
     "@angular/cli": "^19.2.19",
-    "@angular/compiler": "^19.2.18",
-    "@angular/compiler-cli": "^19.2.18",
-    "@angular/language-service": "^19.2.18",
+    "@angular/compiler": "^19.2.19",
+    "@angular/compiler-cli": "^19.2.19",
+    "@angular/language-service": "^19.2.19",
     "@capacitor/cli": "^6.0.0",
     "@ionic/angular-toolkit": "^12.3.0",
     "@ionic/cli": "^7.2.1",
@@ -67,6 +67,16 @@
   },
   "description": "An Ionic project",
   "overrides": {
-    "rollup": "^4.59.0"
+    "rollup": "^4.59.0",
+    "webpack": "^5.104.1",
+    "qs": "^6.14.2",
+    "basic-ftp": "^5.2.0",
+    "serialize-javascript": "^7.0.3",
+    "tar": "^7.5.9",
+    "tmp": "^0.2.5",
+    "ajv": "^8.18.0",
+    "rimraf": {
+      "minimatch": "^8.0.6"
+    }
   }
 }
