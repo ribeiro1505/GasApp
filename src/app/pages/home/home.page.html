@@ -11,10 +11,12 @@
 
 <ion-content [fullscreen]="true">
   <!-- Loading State -->
-  <div *ngIf="!loaded" class="loading-container">
-    <ion-spinner name="crescent" color="primary"></ion-spinner>
-    <p class="loading-text">A carregar...</p>
-  </div>
+  @if (!loaded) {
+    <div class="loading-container">
+      <ion-spinner name="crescent" color="primary"></ion-spinner>
+      <p class="loading-text">A carregar...</p>
+    </div>
+  }
 
   <!-- Pull to Refresh -->
   <ion-refresher slot="fixed" (ionRefresh)="handleRefresh($event)">
@@ -25,127 +27,133 @@
   </ion-refresher>
 
   <!-- Location Permission Warning -->
-  <div *ngIf="locationPermissionDenied && loaded" class="location-warning" (click)="requestLocationPermission()">
-    <ion-icon name="location-outline"></ion-icon>
-    <span>Toque para ativar localização</span>
-  </div>
+  @if (locationPermissionDenied && loaded) {
+    <div class="location-warning" (click)="requestLocationPermission()">
+      <ion-icon name="location-outline"></ion-icon>
+      <span>Toque para ativar localização</span>
+    </div>
+  }
 
   <!-- Main Content -->
-  <div *ngIf="loaded" class="content-wrapper">
-
-    <!-- Top Controls Row -->
-    <div class="controls-row">
-      <!-- Fuel Type Selector -->
-      <div class="fuel-selector" (click)="openFuelSelect()">
-        <ion-icon name="water" class="control-icon"></ion-icon>
-        <span class="control-label">{{ getChosenGasTypeName() }}</span>
-        <ion-icon name="chevron-down" class="chevron-icon"></ion-icon>
-        <ion-select
-          #fuelSelect
-          [(ngModel)]="chosenGasType"
-          (ionChange)="changeGasType($event)"
-          interface="action-sheet"
-          class="hidden-select"
-          [interfaceOptions]="{header: 'Tipo de Combustível'}">
-          <ion-select-option
-            *ngFor="let gasType of gasTypes"
-            [value]="gasType.Id">
-            {{ gasType.Descritivo }}
-          </ion-select-option>
-        </ion-select>
+  @if (loaded) {
+    <div class="content-wrapper">
+      <!-- Top Controls Row -->
+      <div class="controls-row">
+        <!-- Fuel Type Selector -->
+        <div class="fuel-selector" (click)="openFuelSelect()">
+          <ion-icon name="water" class="control-icon"></ion-icon>
+          <span class="control-label">{{ getChosenGasTypeName() }}</span>
+          <ion-icon name="chevron-down" class="chevron-icon"></ion-icon>
+          <ion-select
+            #fuelSelect
+            [(ngModel)]="chosenGasType"
+            (ionChange)="changeGasType($event)"
+            interface="action-sheet"
+            class="hidden-select"
+            [interfaceOptions]="{header: 'Tipo de Combustível'}">
+            @for (gasType of gasTypes; track gasType) {
+              <ion-select-option
+                [value]="gasType.Id">
+                {{ gasType.Descritivo }}
+              </ion-select-option>
+            }
+          </ion-select>
+        </div>
+        <!-- Refresh Button -->
+        <div class="refresh-button" (click)="handleRefresh($event)">
+          <ion-icon name="refresh" [class.spinning]="isRefreshing"></ion-icon>
+        </div>
       </div>
-
-      <!-- Refresh Button -->
-      <div class="refresh-button" (click)="handleRefresh($event)">
-        <ion-icon name="refresh" [class.spinning]="isRefreshing"></ion-icon>
+      <!-- Quick Stats -->
+      <div class="quick-stats">
+        <div class="stat">
+          <ion-icon name="pricetag" color="primary"></ion-icon>
+          <span class="stat-value">{{ getAverageNearPriceLabel() }}</span>
+          <span class="stat-label">preço médio</span>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat">
+          <ion-icon name="navigate" color="success"></ion-icon>
+          <span class="stat-value">{{ getClosestDistanceLabel() }}</span>
+          <span class="stat-label">mais perto</span>
+        </div>
       </div>
+      <!-- Distance Filter -->
+      <div class="distance-filter">
+        <div class="filter-header">
+          <ion-icon name="compass-outline"></ion-icon>
+          <span class="filter-label">Distância máxima</span>
+          <span class="filter-value">{{ maxDistance }} km</span>
+        </div>
+        <ion-range
+          [(ngModel)]="maxDistance"
+          (ionChange)="changeMaxDistance($event)"
+          [min]="5"
+          [max]="50"
+          [step]="5"
+          [pin]="true"
+          [pinFormatter]="formatDistancePin"
+          color="primary">
+        </ion-range>
+      </div>
+      <!-- Section: Cheapest Nearby -->
+      @if (nearCheapStations.length > 0) {
+        <div class="section">
+          <div class="section-header">
+            <span class="section-title">Mais baratas perto</span>
+            <span class="section-count">{{ nearCheapStationsCount }}</span>
+          </div>
+          <div class="horizontal-scroll">
+            @for (station of nearCheapStations; track station) {
+              <app-gas-station-card-small
+                [gasStation]="station"
+                [location]="myLocation"
+                (stationClicked)="viewStationDetails($event)">
+              </app-gas-station-card-small>
+            }
+          </div>
+        </div>
+      }
+      <!-- Section: Nearest -->
+      @if (nearGasStations.length > 0) {
+        <div class="section">
+          <div class="section-header">
+            <span class="section-title">Mais perto</span>
+            <span class="section-count">{{ nearNearestStationsCount }}</span>
+          </div>
+          <div class="horizontal-scroll">
+            @for (station of nearGasStations; track station) {
+              <app-gas-station-card-small
+                [gasStation]="station"
+                [location]="myLocation"
+                (stationClicked)="viewStationDetails($event)">
+              </app-gas-station-card-small>
+            }
+          </div>
+        </div>
+      }
+      <!-- Empty State -->
+      @if (nearCheapStations.length === 0 && nearGasStations.length === 0) {
+        <div class="empty-state">
+          <ion-icon name="location-outline"></ion-icon>
+          <p>Nenhum posto encontrado</p>
+          <ion-button fill="outline" size="small" (click)="handleRefresh($event)">
+            Tentar novamente
+          </ion-button>
+        </div>
+      }
+      <!-- Map Section -->
+      @if (nearCheapStations.length > 0 || nearGasStations.length > 0) {
+        <div class="section">
+          <div class="section-header">
+            <span class="section-title">Mapa</span>
+            <span class="section-count">{{ getAllStationsForMap().length }}</span>
+          </div>
+          <div class="map-container">
+            <div id="map"></div>
+          </div>
+        </div>
+      }
     </div>
-
-    <!-- Quick Stats -->
-    <div class="quick-stats">
-      <div class="stat">
-        <ion-icon name="pricetag" color="primary"></ion-icon>
-        <span class="stat-value">{{ getAverageNearPriceLabel() }}</span>
-        <span class="stat-label">preço médio</span>
-      </div>
-      <div class="stat-divider"></div>
-      <div class="stat">
-        <ion-icon name="navigate" color="success"></ion-icon>
-        <span class="stat-value">{{ getClosestDistanceLabel() }}</span>
-        <span class="stat-label">mais perto</span>
-      </div>
-    </div>
-
-    <!-- Distance Filter -->
-    <div class="distance-filter">
-      <div class="filter-header">
-        <ion-icon name="compass-outline"></ion-icon>
-        <span class="filter-label">Distância máxima</span>
-        <span class="filter-value">{{ maxDistance }} km</span>
-      </div>
-      <ion-range
-        [(ngModel)]="maxDistance"
-        (ionChange)="changeMaxDistance($event)"
-        [min]="5"
-        [max]="50"
-        [step]="5"
-        [pin]="true"
-        [pinFormatter]="formatDistancePin"
-        color="primary">
-      </ion-range>
-    </div>
-
-    <!-- Section: Cheapest Nearby -->
-    <div class="section" *ngIf="nearCheapStations.length > 0">
-      <div class="section-header">
-        <span class="section-title">Mais baratas perto</span>
-        <span class="section-count">{{ nearCheapStationsCount }}</span>
-      </div>
-      <div class="horizontal-scroll">
-        <app-gas-station-card-small
-          *ngFor="let station of nearCheapStations"
-          [gasStation]="station"
-          [location]="myLocation"
-          (stationClicked)="viewStationDetails($event)">
-        </app-gas-station-card-small>
-      </div>
-    </div>
-
-    <!-- Section: Nearest -->
-    <div class="section" *ngIf="nearGasStations.length > 0">
-      <div class="section-header">
-        <span class="section-title">Mais perto</span>
-        <span class="section-count">{{ nearNearestStationsCount }}</span>
-      </div>
-      <div class="horizontal-scroll">
-        <app-gas-station-card-small
-          *ngFor="let station of nearGasStations"
-          [gasStation]="station"
-          [location]="myLocation"
-          (stationClicked)="viewStationDetails($event)">
-        </app-gas-station-card-small>
-      </div>
-    </div>
-
-    <!-- Empty State -->
-    <div *ngIf="nearCheapStations.length === 0 && nearGasStations.length === 0" class="empty-state">
-      <ion-icon name="location-outline"></ion-icon>
-      <p>Nenhum posto encontrado</p>
-      <ion-button fill="outline" size="small" (click)="handleRefresh($event)">
-        Tentar novamente
-      </ion-button>
-    </div>
-
-    <!-- Map Section -->
-    <div class="section" *ngIf="nearCheapStations.length > 0 || nearGasStations.length > 0">
-      <div class="section-header">
-        <span class="section-title">Mapa</span>
-        <span class="section-count">{{ getAllStationsForMap().length }}</span>
-      </div>
-      <div class="map-container">
-        <div id="map"></div>
-      </div>
-    </div>
-
-  </div>
+  }
 </ion-content>

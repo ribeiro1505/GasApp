@@ -4,7 +4,7 @@ declare const L: any;
 import {GasService} from 'src/app/services/gas.service';
 import {Geolocation} from '@capacitor/geolocation';
 import {Preferences} from '@capacitor/preferences';
-import {CommonModule} from '@angular/common';
+
 import {FormsModule} from '@angular/forms';
 import {
   GasStationCardSmallComponent
@@ -31,7 +31,6 @@ import {
   styleUrls: ['home.page.scss'],
   standalone: true,
   imports: [
-    CommonModule,
     FormsModule,
     GasStationCardSmallComponent,
     IonHeader,
@@ -47,7 +46,7 @@ import {
     IonSelect,
     IonSelectOption,
     IonRange
-  ]
+]
 })
 export class HomePage implements OnInit, AfterViewChecked {
   @ViewChild('fuelSelect') fuelSelect!: IonSelect;

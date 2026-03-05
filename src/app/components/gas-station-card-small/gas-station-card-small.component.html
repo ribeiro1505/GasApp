@@ -11,8 +11,10 @@
   </div>
 
   <!-- Distance -->
-  <div class="distance-row" *ngIf="gasStation?.Latitude">
-    <ion-icon name="location" [color]="getDistanceColor()"></ion-icon>
-    <span class="distance-text">{{ getDistance() }} km</span>
-  </div>
+  @if (gasStation?.Latitude) {
+    <div class="distance-row">
+      <ion-icon name="location" [color]="getDistanceColor()"></ion-icon>
+      <span class="distance-text">{{ getDistance() }} km</span>
+    </div>
+  }
 </div>

@@ -1,6 +1,6 @@
 import {Component, ElementRef, EventEmitter, Input, Output, ViewChild,} from '@angular/core';
 import {GasStation} from 'src/app/services/gas.service';
-import {CommonModule} from '@angular/common';
+
 import {GasStationCardSmallComponent} from '../gas-station-card-small/gas-station-card-small.component';
 import {IonIcon} from "@ionic/angular/standalone";
 
@@ -10,10 +10,9 @@ import {IonIcon} from "@ionic/angular/standalone";
   styleUrls: ['./horizontal-scroll-cards.component.scss'],
   standalone: true,
   imports: [
-    CommonModule,
     GasStationCardSmallComponent,
     IonIcon
-  ]
+]
 })
 export class HorizontalScrollCardsComponent {
   @Input() sectionTitle = '';

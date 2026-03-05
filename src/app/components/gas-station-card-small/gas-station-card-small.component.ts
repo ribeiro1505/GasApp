@@ -1,7 +1,7 @@
 import {Component, EventEmitter, Input, Output} from '@angular/core';
 import {Platform} from '@ionic/angular';
 import {GasStation} from 'src/app/services/gas.service';
-import {CommonModule} from '@angular/common';
+
 import {IonIcon} from "@ionic/angular/standalone";
 
 @Component({
@@ -10,9 +10,8 @@ import {IonIcon} from "@ionic/angular/standalone";
   styleUrls: ['./gas-station-card-small.component.scss'],
   standalone: true,
   imports: [
-    CommonModule,
     IonIcon
-  ]
+]
 })
 export class GasStationCardSmallComponent {
   @Input() gasStation!: GasStation;
