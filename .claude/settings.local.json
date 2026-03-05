@@ -8,7 +8,9 @@
       "Bash(npm audit:*)",
       "Bash(npm show:*)",
       "Bash(node:*)",
-      "Bash(npm view:*)"
+      "Bash(npm view:*)",
+      "Bash(git stash:*)",
+      "Bash(./node_modules/.bin/ng update:*)"
     ]
   }
 }

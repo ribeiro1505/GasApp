@@ -51,7 +51,7 @@ import {
 export class HomePage implements OnInit, AfterViewChecked {
   @ViewChild('fuelSelect') fuelSelect!: IonSelect;
 
-  MAX_DISTANCE = 10;
+  MAX_DISTANCE = 5;
   MAX_NUMBER_RESULTS = 20;
 
   // Map
@@ -84,7 +84,7 @@ export class HomePage implements OnInit, AfterViewChecked {
   chosenGasType: any = 3201;
   previousGasType: any = 3201;
   locationPermissionDenied = false;
-  maxDistance = 10;
+  maxDistance = 5;
 
   constructor(private gasService: GasService) {
   }
