@@ -10,7 +10,11 @@
       "Bash(node:*)",
       "Bash(npm view:*)",
       "Bash(git stash:*)",
-      "Bash(./node_modules/.bin/ng update:*)"
+      "Bash(./node_modules/.bin/ng update:*)",
+      "WebSearch",
+      "WebFetch(domain:security.snyk.io)",
+      "WebFetch(domain:www.npmjs.com)",
+      "Bash(npm list:*)"
     ]
   }
 }
