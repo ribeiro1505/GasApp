@@ -1,20 +1,37 @@
-<div class="station-card" (click)="openMapsApp($event)">
-  <!-- Price Badge -->
-  <div class="price-badge">
-    <span class="price">{{ getPrice() }}</span>
-  </div>
+<!-- Mobile card: vertical, compact -->
+<div
+  class="station-card"
+  [class.grid-card]="isGridView"
+  (click)="openMapsApp($event)">
 
-  <!-- Station Info -->
-  <div class="station-info">
-    <img [src]="loadLogo()" [alt]="getName()" class="station-logo" />
-    <div class="station-name">{{ getName() }}</div>
-  </div>
-
-  <!-- Distance -->
-  @if (gasStation.Latitude) {
-    <div class="distance-row">
-      <ion-icon name="location" [color]="getDistanceColor()"></ion-icon>
-      <span class="distance-text">{{ getDistance() }} km</span>
+  @if (!isGridView) {
+    <!-- Mobile vertical card -->
+    <div class="price-tag">{{ getPrice() }}</div>
+    <div class="card-body">
+      <img [src]="loadLogo()" [alt]="getName()" class="station-logo" (error)="onImgError($event)" />
+      <div class="station-name">{{ getName() }}</div>
     </div>
+    @if (gasStation.Latitude) {
+      <div class="distance-row">
+        <ion-icon name="location" [style.color]="getDistanceIconColor()"></ion-icon>
+        <span class="distance-text">{{ getDistance() }} km</span>
+      </div>
+    }
   }
+
+  @if (isGridView) {
+    <!-- Desktop grid row card -->
+    <img [src]="loadLogo()" [alt]="getName()" class="grid-logo" (error)="onImgError($event)" />
+    <div class="grid-info">
+      <span class="grid-name">{{ getName() }}</span>
+      @if (gasStation.Latitude) {
+        <span class="grid-distance">
+          <ion-icon name="location" [style.color]="getDistanceIconColor()"></ion-icon>
+          {{ getDistance() }} km
+        </span>
+      }
+    </div>
+    <div class="grid-price">{{ getPrice() }}</div>
+  }
+
 </div>

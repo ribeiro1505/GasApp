@@ -1,4 +1,4 @@
-import {Component, OnInit, ViewChild, AfterViewChecked} from '@angular/core';
+import {Component, OnInit, ViewChild, ViewChildren, QueryList, AfterViewChecked} from '@angular/core';
 
 declare const L: any;
 import {GasService} from 'src/app/services/gas.service';
@@ -10,7 +10,6 @@ import {
   GasStationCardSmallComponent
 } from '../../components/gas-station-card-small/gas-station-card-small.component';
 import {
-  IonButton,
   IonContent,
   IonHeader,
   IonIcon,
@@ -19,7 +18,6 @@ import {
   IonRefresherContent,
   IonSelect,
   IonSelectOption,
-  IonSpinner,
   IonTitle,
   IonToolbar
 } from "@ionic/angular/standalone";
@@ -36,10 +34,8 @@ import {
     IonToolbar,
     IonTitle,
     IonIcon,
-    IonButton,
     IonContent,
-    IonSpinner,
-    IonRefresher,
+      IonRefresher,
     IonRefresherContent,
     IonSelect,
     IonSelectOption,
@@ -48,8 +44,10 @@ import {
 })
 export class HomePage implements OnInit, AfterViewChecked {
   @ViewChild('fuelSelect') fuelSelect!: IonSelect;
+  @ViewChild('fuelSelectMobile') fuelSelectMobile!: IonSelect;
 
-  MAX_DISTANCE = 5;
+  MAX_DISTANCE = 3;
+  controlsReady = false;
   MAX_NUMBER_RESULTS = 20;
 
   // Map
@@ -75,6 +73,7 @@ export class HomePage implements OnInit, AfterViewChecked {
 
   // Expandable sections
   visibleCount = 5;
+  desktopVisibleCount = 6;
   cheapExpanded = false;
   nearExpanded = false;
 
@@ -82,7 +81,7 @@ export class HomePage implements OnInit, AfterViewChecked {
   chosenGasType: any = 3201;
   previousGasType: any = 3201;
   locationPermissionDenied = false;
-  maxDistance = 5;
+  maxDistance = 3;
 
   constructor(private gasService: GasService) {
   }
@@ -98,9 +97,15 @@ export class HomePage implements OnInit, AfterViewChecked {
     // Load saved max distance
     const {value: maxDist} = await Preferences.get({key: 'maxDistance'});
     if (maxDist) {
-      this.MAX_DISTANCE = parseInt(maxDist, 10);
+      const saved = parseInt(maxDist, 10);
+      this.MAX_DISTANCE = Math.min(saved, 15);
       this.maxDistance = this.MAX_DISTANCE;
     }
+    // Mark controls ready AFTER prefs are resolved so ion-range
+    // always mounts with the correct initial value
+    // Defer until after the first browser paint so ion-range's shadow DOM
+    // is fully laid out when it mounts (prevents offsetHeight = null error)
+    setTimeout(() => { this.controlsReady = true; }, 0);
 
     this.gasService.getTypesOfGas().subscribe((response) => {
       this.gasTypes = response['resultado'];
@@ -114,7 +119,8 @@ export class HomePage implements OnInit, AfterViewChecked {
   }
 
   openFuelSelect() {
-    this.fuelSelect.open();
+    const isDesktop = window.innerWidth >= 900;
+    (isDesktop ? this.fuelSelect : this.fuelSelectMobile)?.open();
   }
 
   async changeGasType(e: any) {
@@ -145,12 +151,14 @@ export class HomePage implements OnInit, AfterViewChecked {
     }
   }
 
-  async handleRefresh(event: any): Promise<void> {
+  async handleRefresh(event?: any): Promise<void> {
     this.isRefreshing = true;
     this.gasService.clearCache();
     this.loadStations();
     this.isRefreshing = false;
-    event.target.complete();
+    if (typeof event?.target?.complete === 'function') {
+      event.target.complete();
+    }
   }
 
   loadStations() {
@@ -362,7 +370,7 @@ export class HomePage implements OnInit, AfterViewChecked {
     if (expanded) {
       return stations;
     }
-    return stations.slice(0, this.visibleCount);
+    return stations.slice(0, this.desktopVisibleCount);
   }
 
   formatDistancePin = (value: number) => {
@@ -383,7 +391,10 @@ export class HomePage implements OnInit, AfterViewChecked {
   }
 
   private initMap(): void {
-    const mapElement = document.getElementById('map');
+    // On desktop (≥900px) the sidebar has #map; on mobile we use #map-mobile
+    const isDesktop = window.innerWidth >= 900;
+    const mapId = isDesktop ? 'map' : 'map-mobile';
+    const mapElement = document.getElementById(mapId);
     if (!mapElement || this.mapInitialized) return;
 
     this.mapInitialized = true;
@@ -392,7 +403,7 @@ export class HomePage implements OnInit, AfterViewChecked {
     const lat = this.myLocation[0] || 38.7;
     const lng = this.myLocation[1] || -9.1;
 
-    this.map = L.map('map').setView([lat, lng], 13);
+    this.map = L.map(mapId).setView([lat, lng], 13);
 
     // Add tile layer (OpenStreetMap)
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -413,6 +424,9 @@ export class HomePage implements OnInit, AfterViewChecked {
 
     // Fit bounds to show all markers
     this.fitMapBounds();
+
+    // Force Leaflet to recalculate container size (avoids black/grey tiles)
+    setTimeout(() => this.map?.invalidateSize(), 150);
   }
 
   private addStationMarkers(): void {

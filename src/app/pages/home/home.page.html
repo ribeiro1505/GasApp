@@ -1,49 +1,64 @@
-<ion-header [translucent]="true" class="ion-no-border">
+<!-- Translucent frosted-glass header (mobile only) -->
+<ion-header [translucent]="true" class="ion-no-border mobile-header">
   <ion-toolbar>
     <ion-title>
-      <div class="header-content">
-        <ion-icon name="flame" class="logo-icon"></ion-icon>
-        <span class="app-title">Gas App</span>
+      <div class="header-brand">
+        <div class="brand-icon">
+          <ion-icon name="flame"></ion-icon>
+        </div>
+        <span class="brand-name">GasApp</span>
       </div>
     </ion-title>
+    <div slot="end" class="header-actions">
+      <button class="icon-btn" (click)="handleRefresh($event)" [class.spinning]="isRefreshing" aria-label="Refresh">
+        <ion-icon name="refresh"></ion-icon>
+      </button>
+    </div>
   </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true">
-  <!-- Loading State -->
-  @if (!loaded) {
-    <div class="loading-container">
-      <ion-spinner name="crescent" color="primary"></ion-spinner>
-      <p class="loading-text">A carregar...</p>
-    </div>
-  }
 
-  <!-- Pull to Refresh -->
+  <!-- Pull-to-refresh (mobile) -->
   <ion-refresher slot="fixed" (ionRefresh)="handleRefresh($event)">
-    <ion-refresher-content
-      pullingIcon="chevron-down-circle-outline"
-      refreshingSpinner="circles">
+    <ion-refresher-content pullingIcon="chevron-down-circle-outline" refreshingSpinner="circles">
     </ion-refresher-content>
   </ion-refresher>
 
-  <!-- Location Permission Warning -->
-  @if (locationPermissionDenied && loaded) {
-    <div class="location-warning" (click)="requestLocationPermission()">
-      <ion-icon name="location-outline"></ion-icon>
-      <span>Toque para ativar localização</span>
-    </div>
-  }
+  <!-- ─── Desktop + Mobile layout wrapper ─────────────────────────────── -->
+  <div class="app-layout">
 
-  <!-- Main Content -->
-  @if (loaded) {
-    <div class="content-wrapper">
-      <!-- Top Controls Row -->
-      <div class="controls-row">
-        <!-- Fuel Type Selector -->
-        <div class="fuel-selector" (click)="openFuelSelect()">
-          <ion-icon name="water" class="control-icon"></ion-icon>
-          <span class="control-label">{{ getChosenGasTypeName() }}</span>
-          <ion-icon name="chevron-down" class="chevron-icon"></ion-icon>
+    <!-- ════════════════════════════════════════════════════════════════════
+         SIDEBAR — visible on desktop, hidden on mobile
+         ════════════════════════════════════════════════════════════════════ -->
+    <aside class="sidebar">
+
+      <!-- Sidebar brand -->
+      <div class="sidebar-brand">
+        <div class="brand-icon">
+          <ion-icon name="flame"></ion-icon>
+        </div>
+        <span class="brand-name">GasApp</span>
+        <button class="icon-btn sidebar-refresh" (click)="handleRefresh($event)" [class.spinning]="isRefreshing" aria-label="Refresh">
+          <ion-icon name="refresh"></ion-icon>
+        </button>
+      </div>
+
+      <!-- Location warning -->
+      @if (locationPermissionDenied) {
+        <button class="location-banner" (click)="requestLocationPermission()">
+          <ion-icon name="location-outline"></ion-icon>
+          <span>Ativar localização</span>
+        </button>
+      }
+
+      <!-- ── Fuel selector ── -->
+      <div class="sidebar-section">
+        <p class="sidebar-label">Combustível</p>
+        <div class="fuel-pill" (click)="openFuelSelect()">
+          <ion-icon name="water-outline" class="pill-icon"></ion-icon>
+          <span class="pill-text">{{ getChosenGasTypeName() }}</span>
+          <ion-icon name="chevron-down" class="pill-chevron"></ion-icon>
           <ion-select
             #fuelSelect
             [(ngModel)]="chosenGasType"
@@ -52,108 +67,294 @@
             class="hidden-select"
             [interfaceOptions]="{header: 'Tipo de Combustível'}">
             @for (gasType of gasTypes; track gasType) {
-              <ion-select-option
-                [value]="gasType.Id">
-                {{ gasType.Descritivo }}
-              </ion-select-option>
+              <ion-select-option [value]="gasType.Id">{{ gasType.Descritivo }}</ion-select-option>
             }
           </ion-select>
         </div>
-        <!-- Refresh Button -->
-        <div class="refresh-button" (click)="handleRefresh($event)">
-          <ion-icon name="refresh" [class.spinning]="isRefreshing"></ion-icon>
-        </div>
       </div>
-      <!-- Quick Stats -->
-      <div class="quick-stats">
-        <div class="stat">
-          <ion-icon name="pricetag" color="primary"></ion-icon>
-          <span class="stat-value">{{ getAverageNearPriceLabel() }}</span>
-          <span class="stat-label">preço médio</span>
+
+      <!-- ── Distance filter ── -->
+      <div class="sidebar-section">
+        <div class="sidebar-label-row">
+          <p class="sidebar-label">Raio de pesquisa</p>
+          <span class="sidebar-value">{{ maxDistance }} km</span>
         </div>
-        <div class="stat-divider"></div>
-        <div class="stat">
-          <ion-icon name="navigate" color="success"></ion-icon>
-          <span class="stat-value">{{ getClosestDistanceLabel() }}</span>
-          <span class="stat-label">mais perto</span>
-        </div>
+        @if (controlsReady) {
+          <ion-range
+            [value]="maxDistance"
+            (ionChange)="changeMaxDistance($event)"
+            [min]="1" [max]="15" [step]="1"
+            [pin]="true"
+            [pinFormatter]="formatDistancePin"
+            color="primary">
+          </ion-range>
+        }
       </div>
-      <!-- Distance Filter -->
-      <div class="distance-filter">
-        <div class="filter-header">
-          <ion-icon name="compass-outline"></ion-icon>
-          <span class="filter-label">Distância máxima</span>
-          <span class="filter-value">{{ maxDistance }} km</span>
-        </div>
-        <ion-range
-          [(ngModel)]="maxDistance"
-          (ionChange)="changeMaxDistance($event)"
-          [min]="5"
-          [max]="50"
-          [step]="5"
-          [pin]="true"
-          [pinFormatter]="formatDistancePin"
-          color="primary">
-        </ion-range>
-      </div>
-      <!-- Section: Cheapest Nearby -->
-      @if (nearCheapStations.length > 0) {
-        <div class="section">
-          <div class="section-header">
-            <span class="section-title">Mais baratas perto</span>
-            <span class="section-count">{{ nearCheapStationsCount }}</span>
+
+      <!-- ── Quick stats ── -->
+      @if (loaded) {
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-icon accent">
+              <ion-icon name="pricetag"></ion-icon>
+            </div>
+            <span class="stat-number">{{ getAverageNearPriceLabel() }}</span>
+            <span class="stat-desc">Preço médio</span>
           </div>
-          <div class="horizontal-scroll">
-            @for (station of nearCheapStations; track station) {
-              <app-gas-station-card-small
-                [gasStation]="station"
-                [location]="myLocation"
-                (stationClicked)="viewStationDetails($event)">
-              </app-gas-station-card-small>
-            }
+          <div class="stat-card">
+            <div class="stat-icon success">
+              <ion-icon name="navigate"></ion-icon>
+            </div>
+            <span class="stat-number">{{ getClosestDistanceLabel() }}</span>
+            <span class="stat-desc">Mais perto</span>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon warning">
+              <ion-icon name="business-outline"></ion-icon>
+            </div>
+            <span class="stat-number">{{ nearStationsWithinRadiusCount }}</span>
+            <span class="stat-desc">Postos</span>
           </div>
         </div>
       }
-      <!-- Section: Nearest -->
-      @if (nearGasStations.length > 0) {
-        <div class="section">
-          <div class="section-header">
-            <span class="section-title">Mais perto</span>
-            <span class="section-count">{{ nearNearestStationsCount }}</span>
+
+      <!-- ── Map (sidebar on desktop) ── -->
+      @if (loaded && (nearCheapStations.length > 0 || nearGasStations.length > 0)) {
+        <div class="sidebar-section sidebar-map-wrap">
+          <div class="sidebar-label-row">
+            <p class="sidebar-label">Mapa</p>
+            <span class="sidebar-value">{{ getAllStationsForMap().length }} postos</span>
           </div>
-          <div class="horizontal-scroll">
-            @for (station of nearGasStations; track station) {
-              <app-gas-station-card-small
-                [gasStation]="station"
-                [location]="myLocation"
-                (stationClicked)="viewStationDetails($event)">
-              </app-gas-station-card-small>
-            }
-          </div>
-        </div>
-      }
-      <!-- Empty State -->
-      @if (nearCheapStations.length === 0 && nearGasStations.length === 0) {
-        <div class="empty-state">
-          <ion-icon name="location-outline"></ion-icon>
-          <p>Nenhum posto encontrado</p>
-          <ion-button fill="outline" size="small" (click)="handleRefresh($event)">
-            Tentar novamente
-          </ion-button>
-        </div>
-      }
-      <!-- Map Section -->
-      @if (nearCheapStations.length > 0 || nearGasStations.length > 0) {
-        <div class="section">
-          <div class="section-header">
-            <span class="section-title">Mapa</span>
-            <span class="section-count">{{ getAllStationsForMap().length }}</span>
-          </div>
-          <div class="map-container">
+          <div class="map-container sidebar-map">
             <div id="map"></div>
           </div>
         </div>
       }
-    </div>
-  }
+
+    </aside>
+
+    <!-- ════════════════════════════════════════════════════════════════════
+         MAIN CONTENT
+         ════════════════════════════════════════════════════════════════════ -->
+    <main class="main-content">
+
+      <!-- ── Mobile-only: controls bar ── -->
+      <div class="mobile-controls">
+        <!-- Location warning -->
+        @if (locationPermissionDenied && loaded) {
+          <button class="location-banner" (click)="requestLocationPermission()">
+            <ion-icon name="location-outline"></ion-icon>
+            <span>Toque para ativar localização</span>
+          </button>
+        }
+
+        <div class="controls-row">
+          <div class="fuel-pill" (click)="openFuelSelect()">
+            <ion-icon name="water-outline" class="pill-icon"></ion-icon>
+            <span class="pill-text">{{ getChosenGasTypeName() }}</span>
+            <ion-icon name="chevron-down" class="pill-chevron"></ion-icon>
+            <ion-select
+              #fuelSelectMobile
+              [(ngModel)]="chosenGasType"
+              (ionChange)="changeGasType($event)"
+              interface="action-sheet"
+              class="hidden-select"
+              [interfaceOptions]="{header: 'Tipo de Combustível'}">
+              @for (gasType of gasTypes; track gasType) {
+                <ion-select-option [value]="gasType.Id">{{ gasType.Descritivo }}</ion-select-option>
+              }
+            </ion-select>
+          </div>
+        </div>
+
+        <!-- Mobile quick stats -->
+        @if (loaded) {
+          <div class="mobile-stats">
+            <div class="mobile-stat">
+              <ion-icon name="pricetag" class="ms-icon accent"></ion-icon>
+              <div class="ms-info">
+                <span class="ms-value">{{ getAverageNearPriceLabel() }}</span>
+                <span class="ms-label">Preço médio</span>
+              </div>
+            </div>
+            <div class="ms-sep"></div>
+            <div class="mobile-stat">
+              <ion-icon name="navigate" class="ms-icon success"></ion-icon>
+              <div class="ms-info">
+                <span class="ms-value">{{ getClosestDistanceLabel() }}</span>
+                <span class="ms-label">Mais perto</span>
+              </div>
+            </div>
+            <div class="ms-sep"></div>
+            <div class="mobile-stat">
+              <ion-icon name="business-outline" class="ms-icon warning"></ion-icon>
+              <div class="ms-info">
+                <span class="ms-value">{{ nearStationsWithinRadiusCount }}</span>
+                <span class="ms-label">Postos</span>
+              </div>
+            </div>
+          </div>
+        }
+
+        <!-- Mobile distance filter -->
+        @if (loaded) {
+          <div class="mobile-filter">
+            <div class="filter-label-row">
+              <span class="filter-label">Raio</span>
+              <span class="filter-value">{{ maxDistance }} km</span>
+            </div>
+            @if (controlsReady) {
+              <ion-range
+                [value]="maxDistance"
+                (ionChange)="changeMaxDistance($event)"
+                [min]="1" [max]="15" [step]="1"
+                [pin]="true"
+                [pinFormatter]="formatDistancePin"
+                color="primary">
+              </ion-range>
+            }
+          </div>
+        }
+      </div>
+
+      <!-- ── Loading state ── -->
+      @if (!loaded) {
+        <div class="loading-state">
+          <div class="skeleton-header"></div>
+          <div class="skeleton-cards">
+            @for (i of [1,2,3,4]; track i) {
+              <div class="skeleton-card"></div>
+            }
+          </div>
+          <div class="skeleton-header" style="margin-top: 28px"></div>
+          <div class="skeleton-cards">
+            @for (i of [1,2,3,4]; track i) {
+              <div class="skeleton-card"></div>
+            }
+          </div>
+        </div>
+      }
+
+      <!-- ── Station sections ── -->
+      @if (loaded) {
+
+        <!-- Cheapest nearby -->
+        @if (nearCheapStations.length > 0) {
+          <section class="station-section">
+            <div class="section-header">
+              <div class="section-title-wrap">
+                <div class="section-icon-dot cheap"></div>
+                <h2 class="section-title">Mais baratas perto</h2>
+              </div>
+              <span class="section-badge">{{ nearCheapStationsCount }}</span>
+            </div>
+
+            <!-- Mobile: horizontal scroll -->
+            <div class="cards-scroll mobile-only">
+              @for (station of nearCheapStations; track station) {
+                <app-gas-station-card-small
+                  [gasStation]="station"
+                  [location]="myLocation"
+                  (stationClicked)="viewStationDetails($event)">
+                </app-gas-station-card-small>
+              }
+            </div>
+
+            <!-- Desktop: grid (limited + show more) -->
+            <div class="cards-grid desktop-only">
+              @for (station of getVisibleStations(nearCheapStations, cheapExpanded); track station) {
+                <app-gas-station-card-small
+                  [gasStation]="station"
+                  [location]="myLocation"
+                  [isGridView]="true"
+                  (stationClicked)="viewStationDetails($event)">
+                </app-gas-station-card-small>
+              }
+            </div>
+            @if (nearCheapStations.length > desktopVisibleCount) {
+              <div class="show-more-row desktop-only">
+                <button class="show-more-btn" (click)="cheapExpanded = !cheapExpanded">
+                  {{ cheapExpanded ? 'Mostrar menos' : 'Mostrar mais (' + (nearCheapStations.length - desktopVisibleCount) + ')' }}
+                  <ion-icon [name]="cheapExpanded ? 'chevron-up' : 'chevron-down'"></ion-icon>
+                </button>
+              </div>
+            }
+          </section>
+        }
+
+        <!-- Nearest -->
+        @if (nearGasStations.length > 0) {
+          <section class="station-section">
+            <div class="section-header">
+              <div class="section-title-wrap">
+                <div class="section-icon-dot near"></div>
+                <h2 class="section-title">Mais perto</h2>
+              </div>
+              <span class="section-badge">{{ nearNearestStationsCount }}</span>
+            </div>
+
+            <!-- Mobile: horizontal scroll -->
+            <div class="cards-scroll mobile-only">
+              @for (station of nearGasStations; track station) {
+                <app-gas-station-card-small
+                  [gasStation]="station"
+                  [location]="myLocation"
+                  (stationClicked)="viewStationDetails($event)">
+                </app-gas-station-card-small>
+              }
+            </div>
+
+            <!-- Desktop: grid (limited + show more) -->
+            <div class="cards-grid desktop-only">
+              @for (station of getVisibleStations(nearGasStations, nearExpanded); track station) {
+                <app-gas-station-card-small
+                  [gasStation]="station"
+                  [location]="myLocation"
+                  [isGridView]="true"
+                  (stationClicked)="viewStationDetails($event)">
+                </app-gas-station-card-small>
+              }
+            </div>
+            @if (nearGasStations.length > desktopVisibleCount) {
+              <div class="show-more-row desktop-only">
+                <button class="show-more-btn" (click)="nearExpanded = !nearExpanded">
+                  {{ nearExpanded ? 'Mostrar menos' : 'Mostrar mais (' + (nearGasStations.length - desktopVisibleCount) + ')' }}
+                  <ion-icon [name]="nearExpanded ? 'chevron-up' : 'chevron-down'"></ion-icon>
+                </button>
+              </div>
+            }
+          </section>
+        }
+
+        <!-- Empty state -->
+        @if (nearCheapStations.length === 0 && nearGasStations.length === 0) {
+          <div class="empty-state">
+            <div class="empty-icon">
+              <ion-icon name="location-outline"></ion-icon>
+            </div>
+            <p class="empty-title">Nenhum posto encontrado</p>
+            <p class="empty-sub">Tente aumentar o raio de pesquisa</p>
+            <button class="retry-btn" (click)="handleRefresh($event)">Tentar novamente</button>
+          </div>
+        }
+
+        <!-- Map — mobile only (sidebar has it on desktop) -->
+        @if (nearCheapStations.length > 0 || nearGasStations.length > 0) {
+          <section class="station-section mobile-only">
+            <div class="section-header">
+              <div class="section-title-wrap">
+                <div class="section-icon-dot map"></div>
+                <h2 class="section-title">Mapa</h2>
+              </div>
+              <span class="section-badge">{{ getAllStationsForMap().length }}</span>
+            </div>
+            <div class="map-container mobile-map">
+              <div id="map-mobile"></div>
+            </div>
+          </section>
+        }
+
+      }
+    </main>
+  </div>
 </ion-content>

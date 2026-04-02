@@ -18,6 +18,7 @@ import {
   navigate,
   trendingDown, navigateCircle, timeOutline, chevronBack, chevronForward, arrowForward, chevronUp, chevronDown, water,
   flame, refresh, compassOutline,
+  businessOutline,
 } from 'ionicons/icons';
 
 import { routes } from './app/app.routes';
@@ -49,7 +50,8 @@ addIcons({
   water,
   flame,
   refresh,
-  compassOutline
+  compassOutline,
+  businessOutline
 });
 
 if (environment.production) {

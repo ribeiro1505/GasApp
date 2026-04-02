@@ -17,6 +17,7 @@ export class GasStationCardSmallComponent {
   @Input() gasStation!: GasStation;
   @Input() location: [number, number] = [0, 0];
   @Input() showSavings = false;
+  @Input() isGridView = false;
   @Output() stationClicked = new EventEmitter<GasStation>();
 
   private readonly DEFAULT_IMAGE =
@@ -55,6 +56,17 @@ export class GasStationCardSmallComponent {
    */
   loadLogo(): string {
     return this.checkMarca() || this.checkNome() || this.DEFAULT_IMAGE;
+  }
+
+  onImgError(event: Event): void {
+    (event.target as HTMLImageElement).src = this.DEFAULT_IMAGE;
+  }
+
+  getDistanceIconColor(): string {
+    const dist = parseFloat(this.getDistance());
+    if (dist <= 1) return 'var(--app-success)';
+    if (dist <= 3) return 'var(--app-warning)';
+    return 'var(--app-danger)';
   }
 
   /**

@@ -1,351 +1,681 @@
-// Header - Minimal and clean
-ion-header {
+// ─── Breakpoints ─────────────────────────────────────────────────────────────
+$desktop: 900px;
+
+// ─── Header ──────────────────────────────────────────────────────────────────
+.mobile-header {
+  @media (min-width: $desktop) { display: none; }
+
   ion-toolbar {
-    --background: var(--ion-background-color);
-    --border-width: 0;
-    --min-height: 56px;
-  }
-
-  .header-content {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-
-    .logo-icon {
-      font-size: 1.5rem;
-      color: var(--ion-color-primary);
-    }
-
-    .app-title {
-      font-weight: 800;
-      font-size: 1.3rem;
-      color: var(--ion-color-primary);
-      letter-spacing: -0.5px;
-    }
-  }
-
-}
-
-// Content - uses Ionic theme variable
-ion-content {
-  --background: var(--ion-background-color);
-}
-
-// Loading State
-.loading-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: 60vh;
-  gap: 16px;
-
-  ion-spinner {
-    transform: scale(1.5);
-  }
-
-  .loading-text {
-    font-size: 1rem;
-    color: var(--ion-color-medium);
+    --background: var(--app-glass);
+    --min-height: 52px;
+    --padding-start: 16px;
+    --padding-end: 8px;
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
   }
 }
 
-// Location Warning - Tappable banner
-.location-warning {
+.header-brand {
   display: flex;
   align-items: center;
-  justify-content: center;
   gap: 8px;
-  padding: 12px 16px;
-  background: var(--ion-color-warning);
-  color: var(--ion-color-warning-contrast);
-  font-weight: 600;
-  font-size: 0.9rem;
-  cursor: pointer;
-
-  ion-icon {
-    font-size: 1.3rem;
-  }
-
-  &:active {
-    opacity: 0.9;
-  }
 }
 
-// Content Wrapper
-.content-wrapper {
-  padding: 16px;
-  padding-bottom: 32px;
-}
-
-// Controls Row
-.controls-row {
-  display: flex;
-  gap: 12px;
-  margin-bottom: 16px;
-}
-
-// Fuel Type Selector
-.fuel-selector {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 14px 16px;
-  background: var(--ion-card-background, var(--ion-item-background));
-  border-radius: 14px;
-  box-shadow: 0 2px 8px rgba(var(--ion-text-color-rgb, 0, 0, 0), 0.06);
-  cursor: pointer;
-  transition: all 0.2s ease;
-  position: relative;
-
-  &:active {
-    transform: scale(0.98);
-  }
-
-  .control-icon {
-    font-size: 1.4rem;
-    color: var(--ion-color-primary);
-  }
-
-  .control-label {
-    flex: 1;
-    font-size: 0.95rem;
-    font-weight: 600;
-    color: var(--ion-text-color);
-  }
-
-  .chevron-icon {
-    font-size: 1rem;
-    color: var(--ion-color-medium);
-  }
-
-  .hidden-select {
-    position: absolute;
-    opacity: 0;
-    pointer-events: none;
-  }
-}
-
-// Refresh Button
-.refresh-button {
+.brand-icon {
+  width: 30px;
+  height: 30px;
+  background: var(--app-accent);
+  border-radius: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 52px;
-  height: 52px;
-  background: var(--ion-card-background, var(--ion-item-background));
-  border-radius: 14px;
-  box-shadow: 0 2px 8px rgba(var(--ion-text-color-rgb, 0, 0, 0), 0.06);
+
+  ion-icon {
+    color: #fff;
+    font-size: 16px;
+  }
+}
+
+.brand-name {
+  font-size: 1.05rem;
+  font-weight: 700;
+  letter-spacing: -0.4px;
+  color: var(--app-text-primary);
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  padding-right: 8px;
+}
+
+// ─── Icon buttons ─────────────────────────────────────────────────────────────
+.icon-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: none;
+  background: var(--app-surface-2);
+  color: var(--app-accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: transform 0.18s ease, background 0.18s ease;
 
-  &:active {
-    transform: scale(0.95);
-  }
+  ion-icon { font-size: 1.1rem; transition: transform 0.5s linear; }
 
-  ion-icon {
-    font-size: 1.4rem;
-    color: var(--ion-color-primary);
+  &:active { transform: scale(0.9); }
 
-    &.spinning {
-      animation: spin 1s linear infinite;
-    }
-  }
+  &.spinning ion-icon { animation: spin 0.8s linear infinite; }
 }
 
-// Quick Stats Bar
-.quick-stats {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 24px;
-  padding: 14px 16px;
-  background: var(--ion-card-background, var(--ion-item-background));
-  border-radius: 12px;
-  margin-bottom: 20px;
-  box-shadow: 0 2px 8px rgba(var(--ion-text-color-rgb, 0, 0, 0), 0.06);
-
-  .stat {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 2px;
-
-    ion-icon {
-      font-size: 1.4rem;
-      margin-bottom: 4px;
-    }
-
-    .stat-value {
-      font-size: 1.3rem;
-      font-weight: 800;
-      color: var(--ion-text-color);
-    }
-
-    .stat-label {
-      font-size: 0.75rem;
-      color: var(--ion-color-medium);
-      font-weight: 500;
-      text-transform: uppercase;
-      letter-spacing: 0.3px;
-    }
-  }
-
-  .stat-divider {
-    width: 1px;
-    height: 32px;
-    background: var(--ion-color-light);
-  }
-}
-
-// Distance Filter
-.distance-filter {
-  background: var(--ion-card-background, var(--ion-item-background));
-  border-radius: 14px;
-  padding: 14px 16px 8px;
-  margin-bottom: 20px;
-  box-shadow: 0 2px 8px rgba(var(--ion-text-color-rgb, 0, 0, 0), 0.06);
-
-  .filter-header {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-bottom: 4px;
-
-    ion-icon {
-      font-size: 1.2rem;
-      color: var(--ion-color-primary);
-    }
-
-    .filter-label {
-      flex: 1;
-      font-size: 0.9rem;
-      font-weight: 600;
-      color: var(--ion-text-color);
-    }
-
-    .filter-value {
-      font-size: 0.95rem;
-      font-weight: 700;
-      color: var(--ion-color-primary);
-    }
-  }
-
-  ion-range {
-    --bar-height: 4px;
-    --bar-border-radius: 4px;
-    --knob-size: 22px;
-    --bar-background: var(--ion-color-light);
-    --bar-background-active: var(--ion-color-primary);
-    --knob-background: var(--ion-color-primary);
-    --knob-box-shadow: 0 2px 6px rgba(var(--ion-color-primary-rgb, 30, 136, 229), 0.4);
-    padding: 8px 0;
-  }
-}
-
-// Section
-.section {
-  margin-bottom: 24px;
-
-  .section-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 12px;
-    padding: 0 4px;
-
-    .section-title {
-      font-size: 1.1rem;
-      font-weight: 700;
-      color: var(--ion-text-color);
-    }
-
-    .section-count {
-      font-size: 0.85rem;
-      font-weight: 600;
-      color: var(--ion-color-medium);
-    }
-  }
-}
-
-// Horizontal Scroll
-.horizontal-scroll {
-  display: flex;
-  gap: 14px;
-  overflow-x: auto;
-  overflow-y: visible;
-  scroll-behavior: smooth;
-  padding: 12px 16px 8px 16px;
-  margin: 0 -16px;
-  -webkit-overflow-scrolling: touch;
-
-  // Hide scrollbar
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-  &::-webkit-scrollbar {
-    display: none;
-  }
-
-  // Cards need fixed width for horizontal scroll
-  app-gas-station-card-small {
-    flex-shrink: 0;
-    width: 160px;
-  }
-}
-
-// Empty State
-.empty-state {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 60px 20px;
-  text-align: center;
-
-  ion-icon {
-    font-size: 4rem;
-    color: var(--ion-color-medium);
-    margin-bottom: 16px;
-    opacity: 0.5;
-  }
-
-  p {
-    color: var(--ion-color-medium);
-    font-size: 1.1rem;
-    margin: 0 0 20px 0;
-  }
-}
-
-// Animations
 @keyframes spin {
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
 }
 
-// Map Container
-.map-container {
+// ─── Location banner ──────────────────────────────────────────────────────────
+.location-banner {
   width: 100%;
-  height: 350px;
-  border-radius: 16px;
-  overflow: hidden;
-  box-shadow: 0 2px 12px rgba(var(--ion-text-color-rgb, 0, 0, 0), 0.08);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  background: rgba(255, 149, 0, 0.1);
+  border: 1px solid rgba(255, 149, 0, 0.25);
+  border-radius: var(--app-radius-sm);
+  color: var(--app-warning);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  text-align: left;
+  margin-bottom: 12px;
 
-  #map {
-    width: 100%;
-    height: 100%;
+  ion-icon { font-size: 1rem; flex-shrink: 0; }
+
+  &:active { opacity: 0.75; }
+}
+
+// ─── App layout — main grid ───────────────────────────────────────────────────
+.app-layout {
+  min-height: 100%;
+  display: flex;
+
+  @media (min-width: $desktop) {
+    flex-direction: row;
+    align-items: stretch;
   }
 }
 
+// ─── Sidebar ──────────────────────────────────────────────────────────────────
+.sidebar {
+  display: none;
 
-// Responsive
-@media (max-width: 576px) {
-  .content-wrapper {
-    padding: 12px;
+  @media (min-width: $desktop) {
+    display: flex;
+    flex-direction: column;
+    width: 300px;
+    min-width: 300px;
+    min-height: 100vh;
+    max-height: 100vh;
+    position: sticky;
+    top: 0;
+    overflow-y: auto;
+    padding: 32px 20px;
+    background: var(--app-sidebar-bg);
+    backdrop-filter: blur(24px) saturate(180%);
+    -webkit-backdrop-filter: blur(24px) saturate(180%);
+    border-right: 1px solid var(--app-separator);
+    gap: 4px;
   }
 
-  .section .section-header .section-title {
+  @media (min-width: 1200px) {
+    width: 320px;
+    min-width: 320px;
+    padding: 36px 24px;
+  }
+}
+
+.sidebar-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 28px;
+
+  .brand-name { flex: 1; font-size: 1.1rem; font-weight: 700; letter-spacing: -0.4px; }
+
+  .sidebar-refresh {
+    margin-left: auto;
+    background: transparent;
+    color: var(--app-text-secondary);
+
+    &:hover { background: var(--app-surface-2); }
+  }
+}
+
+.sidebar-section {
+  margin-bottom: 20px;
+}
+
+.sidebar-label {
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  color: var(--app-text-secondary);
+  margin: 0 0 8px 2px;
+}
+
+.sidebar-label-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.sidebar-value {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--app-accent);
+}
+
+// ─── Fuel pill ────────────────────────────────────────────────────────────────
+.fuel-pill {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 11px 14px;
+  background: var(--app-surface);
+  border-radius: var(--app-radius);
+  border: 1px solid var(--app-separator);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  position: relative;
+  box-shadow: var(--app-shadow-sm);
+
+  &:active { transform: scale(0.98); }
+
+  .pill-icon {
     font-size: 1rem;
+    color: var(--app-accent);
+    flex-shrink: 0;
   }
+
+  .pill-text {
+    flex: 1;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--app-text-primary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .pill-chevron {
+    font-size: 0.75rem;
+    color: var(--app-text-secondary);
+    flex-shrink: 0;
+  }
+
+  .hidden-select {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+  }
+}
+
+// ─── Stats grid (sidebar) ─────────────────────────────────────────────────────
+.stats-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.stat-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 12px 8px;
+  background: var(--app-surface);
+  border-radius: var(--app-radius-sm);
+  border: 1px solid var(--app-separator);
+  box-shadow: var(--app-shadow-sm);
+  text-align: center;
+}
+
+.stat-icon {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 2px;
+
+  ion-icon { font-size: 0.95rem; }
+
+  &.accent {
+    background: rgba(var(--app-accent-rgb), 0.12);
+    ion-icon { color: var(--app-accent); }
+  }
+
+  &.success {
+    background: rgba(52, 199, 89, 0.12);
+    ion-icon { color: var(--app-success); }
+  }
+
+  &.warning {
+    background: rgba(255, 149, 0, 0.12);
+    ion-icon { color: var(--app-warning); }
+  }
+}
+
+.stat-number {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--app-text-primary);
+  letter-spacing: -0.3px;
+  line-height: 1;
+}
+
+.stat-desc {
+  font-size: 0.65rem;
+  font-weight: 500;
+  color: var(--app-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.2px;
+}
+
+// ─── Sidebar map ──────────────────────────────────────────────────────────────
+.sidebar-map-wrap {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.map-container {
+  border-radius: var(--app-radius);
+  overflow: hidden;
+  box-shadow: var(--app-shadow);
+  border: 1px solid var(--app-separator);
+}
+
+.sidebar-map {
+  height: 280px;
+  flex-shrink: 0;
+
+  @media (min-width: 1200px) { height: 320px; }
+
+  #map { width: 100%; height: 100%; }
+}
+
+// ─── Main content ─────────────────────────────────────────────────────────────
+.main-content {
+  flex: 1;
+  min-width: 0;
+  padding: 0 16px 40px;
+
+  @media (min-width: $desktop) {
+    padding: 32px 28px 40px;
+    max-width: none;
+  }
+
+  @media (min-width: 1200px) {
+    padding: 36px 36px 40px;
+  }
+}
+
+// ─── Mobile-only / desktop-only toggles ──────────────────────────────────────
+.mobile-only {
+  @media (min-width: $desktop) { display: none !important; }
+}
+
+.desktop-only {
+  display: none;
+  @media (min-width: $desktop) { display: grid !important; }
+}
+
+// ─── Mobile controls (hidden on desktop) ─────────────────────────────────────
+.mobile-controls {
+  padding-top: 16px;
+
+  @media (min-width: $desktop) { display: none; }
+}
+
+.controls-row {
+  margin-bottom: 14px;
+}
+
+// ─── Mobile quick stats ───────────────────────────────────────────────────────
+.mobile-stats {
+  display: flex;
+  align-items: center;
+  padding: 14px 16px;
+  background: var(--app-surface);
+  border-radius: var(--app-radius);
+  border: 1px solid var(--app-separator);
+  box-shadow: var(--app-shadow-sm);
+  margin-bottom: 12px;
+}
+
+.mobile-stat {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  justify-content: center;
+}
+
+.ms-icon {
+  font-size: 1.1rem;
+  flex-shrink: 0;
+
+  &.accent { color: var(--app-accent); }
+  &.success { color: var(--app-success); }
+  &.warning { color: var(--app-warning); }
+}
+
+.ms-info {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.ms-value {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--app-text-primary);
+  letter-spacing: -0.3px;
+  line-height: 1;
+}
+
+.ms-label {
+  font-size: 0.65rem;
+  font-weight: 500;
+  color: var(--app-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.2px;
+}
+
+.ms-sep {
+  width: 1px;
+  height: 28px;
+  background: var(--app-separator);
+  flex-shrink: 0;
+}
+
+// ─── Mobile distance filter ───────────────────────────────────────────────────
+.mobile-filter {
+  padding: 12px 16px 4px;
+  background: var(--app-surface);
+  border-radius: var(--app-radius);
+  border: 1px solid var(--app-separator);
+  box-shadow: var(--app-shadow-sm);
+  margin-bottom: 4px;
+}
+
+.filter-label-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.filter-label {
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  color: var(--app-text-secondary);
+}
+
+.filter-value {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--app-accent);
+}
+
+// ─── Loading — skeleton screens ───────────────────────────────────────────────
+.loading-state {
+  padding-top: 20px;
+
+  @media (min-width: $desktop) { padding-top: 0; }
+}
+
+@keyframes shimmer {
+  0%   { background-position: -600px 0; }
+  100% { background-position: 600px 0; }
+}
+
+.skeleton-header {
+  height: 20px;
+  width: 140px;
+  margin-bottom: 14px;
+  margin-top: 24px;
+  border-radius: 6px;
+  background: linear-gradient(90deg, var(--app-surface) 25%, var(--app-surface-2) 50%, var(--app-surface) 75%);
+  background-size: 1200px 100%;
+  animation: shimmer 1.4s ease-in-out infinite;
+}
+
+.skeleton-cards {
+  display: flex;
+  gap: 12px;
+  overflow: hidden;
+
+  @media (min-width: $desktop) {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  }
+}
+
+.skeleton-card {
+  flex-shrink: 0;
+  width: 150px;
+  height: 160px;
+  border-radius: var(--app-radius);
+  background: linear-gradient(90deg, var(--app-surface) 25%, var(--app-surface-2) 50%, var(--app-surface) 75%);
+  background-size: 1200px 100%;
+  animation: shimmer 1.4s ease-in-out infinite;
+
+  @media (min-width: $desktop) {
+    width: 100%;
+    height: 90px;
+  }
+}
+
+// ─── Section ──────────────────────────────────────────────────────────────────
+.station-section {
+  margin-bottom: 28px;
+  animation: fadeUp 0.35s ease both;
+
+  &:nth-child(1) { animation-delay: 0.04s; }
+  &:nth-child(2) { animation-delay: 0.1s; }
+  &:nth-child(3) { animation-delay: 0.16s; }
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  padding: 0 2px;
+}
+
+.section-title-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.section-icon-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+
+  &.cheap { background: var(--app-success); }
+  &.near  { background: var(--app-accent); }
+  &.map   { background: var(--app-warning); }
+}
+
+.section-title {
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: -0.3px;
+  color: var(--app-text-primary);
+  margin: 0;
+}
+
+.section-badge {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--app-text-secondary);
+  background: var(--app-surface-2);
+  border: 1px solid var(--app-separator);
+  padding: 2px 8px;
+  border-radius: 20px;
+}
+
+// ─── Mobile cards: horizontal scroll ─────────────────────────────────────────
+.cards-scroll {
+  display: flex;
+  align-items: stretch;
+  gap: 12px;
+  overflow-x: auto;
+  padding: 4px 0 12px;
+  -webkit-overflow-scrolling: touch;
+  scroll-snap-type: x mandatory;
+
+  app-gas-station-card-small {
+    flex-shrink: 0;
+    scroll-snap-align: start;
+    height: auto;
+
+    &:last-child {
+      margin-right: 16px;
+    }
+  }
+}
+
+// ─── Desktop cards: grid ──────────────────────────────────────────────────────
+// Fixed column counts — never recalculates on content changes
+.cards-grid {
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+
+  @media (min-width: 1100px) {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  @media (min-width: 1500px) {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  // Prevent any grid item from growing beyond its 1fr cell
+  app-gas-station-card-small {
+    min-width: 0;
+    overflow: hidden;
+  }
+}
+
+// ─── Show more ────────────────────────────────────────────────────────────────
+.show-more-row {
+  display: none;
+  justify-content: center;
+  margin-top: 12px;
+
+  @media (min-width: $desktop) {
+    display: flex;
+  }
+}
+
+.show-more-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 20px;
+  background: var(--app-surface);
+  color: var(--app-accent);
+  border: 1px solid var(--app-separator);
+  border-radius: 980px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s ease, transform 0.15s ease;
+  box-shadow: var(--app-shadow-sm);
+
+  ion-icon { font-size: 0.8rem; }
+
+  &:hover { background: var(--app-surface-2); }
+  &:active { transform: scale(0.97); }
+}
+
+// ─── Mobile map ───────────────────────────────────────────────────────────────
+.mobile-map {
+  height: 280px;
+
+  #map-mobile { width: 100%; height: 100%; }
+}
+
+// ─── Empty state ──────────────────────────────────────────────────────────────
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 24px;
+  text-align: center;
+  gap: 8px;
+}
+
+.empty-icon {
+  width: 64px;
+  height: 64px;
+  background: var(--app-surface-2);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 8px;
+
+  ion-icon { font-size: 2rem; color: var(--app-text-secondary); }
+}
+
+.empty-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--app-text-primary);
+  margin: 0;
+}
+
+.empty-sub {
+  font-size: 0.85rem;
+  color: var(--app-text-secondary);
+  margin: 0 0 12px;
+}
+
+.retry-btn {
+  padding: 10px 22px;
+  background: var(--app-accent);
+  color: #fff;
+  font-size: 0.9rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 980px;
+  cursor: pointer;
+  transition: opacity 0.15s ease, transform 0.15s ease;
+
+  &:active { opacity: 0.85; transform: scale(0.97); }
 }
