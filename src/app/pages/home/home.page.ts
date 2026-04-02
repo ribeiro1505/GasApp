@@ -11,7 +11,6 @@ import {
 } from '../../components/gas-station-card-small/gas-station-card-small.component';
 import {
   IonButton,
-  IonButtons,
   IonContent,
   IonHeader,
   IonIcon,
@@ -37,7 +36,6 @@ import {
     IonToolbar,
     IonTitle,
     IonIcon,
-    IonButtons,
     IonButton,
     IonContent,
     IonSpinner,

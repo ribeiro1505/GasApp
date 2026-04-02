@@ -11,7 +11,7 @@
   </div>
 
   <!-- Distance -->
-  @if (gasStation?.Latitude) {
+  @if (gasStation.Latitude) {
     <div class="distance-row">
       <ion-icon name="location" [color]="getDistanceColor()"></ion-icon>
       <span class="distance-text">{{ getDistance() }} km</span>

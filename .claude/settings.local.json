@@ -14,7 +14,10 @@
       "WebSearch",
       "WebFetch(domain:security.snyk.io)",
       "WebFetch(domain:www.npmjs.com)",
-      "Bash(npm list:*)"
+      "Bash(npm list:*)",
+      "Bash(npm outdated:*)",
+      "Bash(npm update:*)",
+      "Bash(ls -la /Users/guilhermeribeiro/Documents/Personal/Projects/GasApp/.browserslist*)"
     ]
   }
 }
