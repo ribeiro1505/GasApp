@@ -71,7 +71,7 @@
     "rollup": "^4.60.1",
     "webpack": "^5.105.4",
     "qs": "^6.14.2",
-    "basic-ftp": "^5.2.0",
+    "basic-ftp": "^5.2.2",
     "@xmldom/xmldom": "^0.9.9",
     "brace-expansion": "^5.0.5",
     "lodash": "^4.18.1",
@@ -82,7 +82,9 @@
     "tar": "^7.5.13",
     "tmp": "^0.2.5",
     "undici": ">=8.0.0",
-    "hono": ">=4.12.7",
+    "hono": ">=4.12.12",
+    "@hono/node-server": ">=1.19.13",
+    "vite": "^7.3.2",
     "ajv": "^8.18.0",
     "rimraf": {
       "minimatch": "^8.0.6"
